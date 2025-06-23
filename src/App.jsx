@@ -1,6 +1,5 @@
 // shop-miniapp — базовая структура на React + Vite с Tailwind CSS
 
-// 1. Основной компонент App.jsx
 import { useState, useEffect } from 'react'
 import { ProductList } from './components/ProductList'
 import { Cart } from './components/Cart'
@@ -42,12 +41,16 @@ function App() {
     <div className="p-4 max-w-screen-md mx-auto">
       <h1 className="text-2xl font-bold mb-4">JWD Express</h1>
 
-      {!isAdmin && <Login onLogin={setIsAdmin} />}
-      {isAdmin && <AdminPanel />}
-
-      <ProductList products={products} addToCart={addToCart} discountRules={discountRules} />
-      <Cart items={cartItems} discountRules={discountRules} />
-      <CheckoutForm items={cartItems} />
+      {isAdmin ? (
+        <>
+          <AdminPanel />
+          <ProductList products={products} addToCart={addToCart} discountRules={discountRules} />
+          <Cart items={cartItems} discountRules={discountRules} />
+          <CheckoutForm items={cartItems} />
+        </>
+      ) : (
+        <Login onLogin={setIsAdmin} />
+      )}
     </div>
   )
 }
