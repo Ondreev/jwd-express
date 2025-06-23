@@ -1,3 +1,5 @@
+// shop-miniapp — базовая структура на React + Vite с Tailwind CSS
+
 import { useState, useEffect } from 'react'
 import { ProductList } from './components/ProductList'
 import { Cart } from './components/Cart'
@@ -35,7 +37,12 @@ function App() {
       .then(res => res.json())
       .then(data => {
         console.log('🟢 Products:', data)
-        setProducts(data)
+        if (Array.isArray(data)) {
+          setProducts(data)
+        } else {
+          console.error('❌ Ожидался массив, но получено:', data)
+          setProducts([])
+        }
         setLoading(false)
       })
       .catch(err => {
@@ -66,4 +73,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
