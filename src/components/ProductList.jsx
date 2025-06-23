@@ -19,7 +19,7 @@ export function ProductList({ products, addToCart, discountRules }) {
           key={product.id}
           product={product}
           maxDiscount={maxDiscount}
-          addToCart={addToCart}
+          addToCart={addToCart} // 🟢 добавление этой строки обязательно
         />
       ))}
     </div>
