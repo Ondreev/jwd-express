@@ -1,5 +1,3 @@
-// shop-miniapp — базовая структура на React + Vite с Tailwind CSS
-
 import { useState, useEffect } from 'react'
 import { ProductList } from './components/ProductList'
 import { Cart } from './components/Cart'
@@ -18,7 +16,7 @@ function App() {
   }
 
   useEffect(() => {
-    fetch('https://script.google.com/macros/s/AKfycbybK3Vobo8b5sb8Lo4fgHs9atBxBeaan40O42W0ZfHWVAcI3w2mJjPDtY9A5AaSi-wl7A/exec?action=getSettings')
+    fetch('https://script.google.com/macros/s/AKfycbxhfipSAbKIDxove3iOYAzqssmt_YBHFdL9Fp1mnUQYbJRwBxQtAxPZ7AaUxgqkTvbDpw/exec?action=getSettings')
       .then(res => res.json())
       .then(data => {
         const rules = Object.entries(data)
@@ -32,7 +30,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    fetch('https://script.google.com/macros/s/AKfycbybK3Vobo8b5sb8Lo4fgHs9atBxBeaan40O42W0ZfHWVAcI3w2mJjPDtY9A5AaSi-wl7A/exec?action=getProducts')
+    fetch('https://script.google.com/macros/s/AKfycbxhfipSAbKIDxove3iOYAzqssmt_YBHFdL9Fp1mnUQYbJRwBxQtAxPZ7AaUxgqkTvbDpw/exec?action=getProducts')
       .then(res => res.json())
       .then(setProducts)
   }, [])
