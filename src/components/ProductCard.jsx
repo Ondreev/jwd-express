@@ -1,7 +1,3 @@
-// ProductCard.jsx
-
-console.log('🧩 ProductCard получает:', product)
-
 export function ProductCard({ product, maxDiscount, addToCart }) {
   if (!product || typeof product !== 'object') {
     console.warn('❌ Неверный формат product:', product)
@@ -43,4 +39,4 @@ export function ProductCard({ product, maxDiscount, addToCart }) {
       </button>
     </div>
   )
-} 
+}
