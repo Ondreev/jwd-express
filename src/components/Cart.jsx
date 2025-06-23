@@ -1,16 +1,9 @@
-// Cart.jsx — современный футуристичный стиль с правильной поддержкой скидок
+// Cart.jsx — современный футуристичный стиль с правильной поддержкой скидок от суммы корзины
 
 export function Cart({ items, discountRules }) {
   if (!Array.isArray(items) || items.length === 0) return null
 
-  // Определяем скидку для каждой позиции
-  const getDiscountPercent = (price, rules) => {
-    const matchedRule = [...rules]
-      .sort((a, b) => b.min - a.min)
-      .find(rule => price >= rule.min)
-    return matchedRule ? matchedRule.percent : 0
-  }
-
+  // Группируем товары по id
   const groupedItems = items.reduce((acc, item) => {
     const key = item.id || item.name
     acc[key] = acc[key] || { ...item, quantity: 0 }
@@ -20,12 +13,15 @@ export function Cart({ items, discountRules }) {
 
   const itemList = Object.values(groupedItems)
 
-  const total = itemList.reduce((sum, item) => {
+  // Общая сумма без скидки
+  const fullTotal = itemList.reduce((sum, item) => {
     const price = parseFloat(item.price?.toString().replace(/[^\d.]/g, '')) || 0
-    const discountPercent = getDiscountPercent(price * item.quantity, discountRules)
-    const discountedPrice = Math.round(price * (1 - discountPercent / 100))
-    return sum + discountedPrice * item.quantity
+    return sum + price * item.quantity
   }, 0)
+
+  // Определяем скидку по общей сумме корзины
+  const matchedRule = [...discountRules].sort((a, b) => b.min - a.min).find(rule => fullTotal >= rule.min)
+  const discountPercent = matchedRule ? matchedRule.percent : 0
 
   return (
     <div className="mt-8 bg-gradient-to-r from-gray-900 to-gray-800 p-6 rounded-2xl shadow-lg text-white">
@@ -33,9 +29,8 @@ export function Cart({ items, discountRules }) {
       <ul className="space-y-2 mb-6">
         {itemList.map((item, index) => {
           const price = parseFloat(item.price?.toString().replace(/[^\d.]/g, '')) || 0
-          const discountPercent = getDiscountPercent(price * item.quantity, discountRules)
-          const discounted = Math.round(price * (1 - discountPercent / 100))
           const hasDiscount = discountPercent > 0
+          const discounted = Math.round(price * (1 - discountPercent / 100))
 
           return (
             <li
@@ -58,7 +53,7 @@ export function Cart({ items, discountRules }) {
         })}
       </ul>
       <div className="text-right text-xl font-bold border-t border-gray-700 pt-4">
-        Итого: {total}₽
+        Итого: {Math.round(fullTotal * (1 - discountPercent / 100))}₽
       </div>
     </div>
   )
