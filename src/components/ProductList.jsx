@@ -9,14 +9,19 @@ export function ProductList({ products, addToCart, discountRules }) {
 
   return (
     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-      {products.map(product => (
-        <ProductCard
-          key={product.id}
-          product={product}
-          addToCart={addToCart}
-          maxDiscount={maxDiscount}
-        />
-      ))}
+      {products.map(product => {
+        const price = parseFloat(product.price) || 0
+        const discountedPrice = maxDiscount ? Math.round(price * (1 - maxDiscount / 100)) : price
+
+        return (
+          <ProductCard
+            key={product.id}
+            product={{ ...product, discountedPrice }}
+            addToCart={addToCart}
+            maxDiscount={maxDiscount}
+          />
+        )
+      })}
     </div>
   )
 }
