@@ -28,7 +28,7 @@ export function Cart({ items = [], discountRules = [] }) {
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 mt-6 rounded-2xl shadow-2xl space-y-5 text-white">
-      <style>{`body { background-color: #ffeb00; }`}</style>
+      <style>{`body { background: linear-gradient(to bottom right, #000000, #4b0082); }`}</style>
       <h2 className="text-2xl font-bold text-white">Корзина</h2>
 
       {uniqueItems.map((item, i) => (
