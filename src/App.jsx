@@ -37,14 +37,14 @@ function App() {
       .then(res => res.json())
       .then(data => {
         console.log('🟢 Products:', data)
-        if (Array.isArray(data)) {
-          const safeData = data.map(product => ({
+        if (Array.isArray(data.products)) {
+          const safeData = data.products.map(product => ({
             ...product,
             promo: product.promo === true || product.promo === "TRUE"
           }))
           setProducts(safeData)
         } else {
-          console.error('❌ Ожидался массив, но получено:', data)
+          console.error('❌ products не массив:', data)
           setProducts([])
         }
         setLoading(false)
