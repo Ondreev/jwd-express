@@ -5,9 +5,10 @@ export function ProductCard({ product, addToCart }) {
     description,
     promo,
     originalPrice,
-    discountedPrice,
-    discount
+    discountedPrice
   } = product
+
+  const hasDiscount = discountedPrice && discountedPrice < originalPrice
 
   return (
     <div className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition duration-300 relative">
@@ -29,7 +30,7 @@ export function ProductCard({ product, addToCart }) {
       <p className="text-sm text-gray-600 mb-2">{description}</p>
 
       <div className="mb-3">
-        {discount > 0 ? (
+        {hasDiscount ? (
           <div className="space-x-2">
             <span className="text-sm line-through text-red-500">{originalPrice}₽</span>
             <span className="text-xl font-bold text-black">{discountedPrice}₽</span>
