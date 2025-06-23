@@ -28,6 +28,7 @@ export function Cart({ items = [], discountRules = [] }) {
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 mt-6 rounded-2xl shadow-2xl space-y-5 text-white">
+      <style>{`body { background-color: #ffeb00; }`}</style>
       <h2 className="text-2xl font-bold text-white">Корзина</h2>
 
       {uniqueItems.map((item, i) => (
@@ -40,7 +41,7 @@ export function Cart({ items = [], discountRules = [] }) {
       ))}
 
       {discountPercent > 0 && (
-        <div className="text-amber-400 font-bold text-base mt-2">
+        <div className="text-yellow-400 font-extrabold text-base mt-2">
           Вы сэкономили {discountPercent}% / {formatPrice(discountAmount)}
         </div>
       )}
