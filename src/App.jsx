@@ -61,18 +61,18 @@ function App() {
 
       {loading && <p>Загрузка товаров...</p>}
 
-      {!loading && (
-        <>
-          {products.length > 0 ? (
-            <ProductList
-              products={products}
-              addToCart={addToCart}
-              discountRules={discountRules}
-            />
-          ) : (
-            <p className="text-gray-500">Нет доступных товаров.</p>
-          )}
-        </>
+      {!loading && Array.isArray(products) ? (
+        products.length > 0 ? (
+          <ProductList
+            products={products}
+            addToCart={addToCart}
+            discountRules={discountRules}
+          />
+        ) : (
+          <p className="text-gray-500">Нет доступных товаров.</p>
+        )
+      ) : (
+        <p className="text-red-500">Ошибка загрузки данных.</p>
       )}
 
       <Cart items={cartItems} discountRules={discountRules} />
