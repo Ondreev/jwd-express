@@ -48,11 +48,15 @@ function App() {
               }
             })
 
+            const discountedPrice = discount ? Math.round(price * (1 - discount / 100)) : price
+
             return {
               ...p,
               price,
               promo: p.promo === true || p.promo === 'TRUE',
-              discount
+              discount,
+              discountedPrice,
+              originalPrice: price
             }
           })
           setProducts(safeData)
