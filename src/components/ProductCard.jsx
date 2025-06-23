@@ -10,18 +10,20 @@ export function ProductCard({ product, addToCart }) {
   } = product
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition duration-300">
-      <img
-        src={image}
-        alt={name}
-        className="w-full h-40 object-cover rounded mb-3"
-      />
+    <div className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition duration-300 relative">
+      <div className="relative">
+        <img
+          src={image}
+          alt={name}
+          className="w-full h-40 object-cover rounded mb-3"
+        />
+        {promo && (
+          <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">АКЦИЯ</span>
+        )}
+      </div>
 
       <div className="flex justify-between items-start mb-1">
         <h2 className="text-lg font-semibold leading-tight">{name}</h2>
-        {promo && (
-          <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded">АКЦИЯ</span>
-        )}
       </div>
 
       <p className="text-sm text-gray-600 mb-2">{description}</p>
