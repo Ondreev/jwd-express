@@ -7,32 +7,47 @@ export function Cart({ items, discountRules }) {
     ? Math.max(...discountRules.map(r => r.percent))
     : 0
 
-  const total = items.reduce((sum, item) => {
+  // Группируем товары по id
+  const groupedItems = items.reduce((acc, item) => {
+    const key = item.id || item.name
+    acc[key] = acc[key] || { ...item, quantity: 0 }
+    acc[key].quantity += 1
+    return acc
+  }, {})
+
+  const itemList = Object.values(groupedItems)
+
+  const total = itemList.reduce((sum, item) => {
+    const price = Number(item.price)
     const discountedPrice = maxDiscount
-      ? Math.round(item.price * (1 - maxDiscount / 100))
-      : item.price
-    return sum + discountedPrice
+      ? Math.round(price * (1 - maxDiscount / 100))
+      : price
+    return sum + discountedPrice * item.quantity
   }, 0)
 
   return (
     <div className="mt-6 p-4 border rounded shadow bg-white">
       <h2 className="text-xl font-semibold mb-2">Корзина</h2>
       <ul className="mb-4">
-        {items.map((item, index) => (
-          <li key={index} className="flex justify-between border-b py-1">
-            <span>{item.name}</span>
-            <span>
-              {maxDiscount && (
-                <span className="text-sm line-through text-gray-400 mr-2">
-                  {item.price}₽
-                </span>
-              )}
-              {maxDiscount
-                ? Math.round(item.price * (1 - maxDiscount / 100))
-                : item.price}₽
-            </span>
-          </li>
-        ))}
+        {itemList.map((item, index) => {
+          const price = Number(item.price)
+          const discounted = maxDiscount
+            ? Math.round(price * (1 - maxDiscount / 100))
+            : price
+          return (
+            <li key={index} className="flex justify-between border-b py-1">
+              <span>{item.name} x{item.quantity}</span>
+              <span>
+                {maxDiscount && (
+                  <span className="text-sm line-through text-gray-400 mr-2">
+                    {price * item.quantity}₽
+                  </span>
+                )}
+                {discounted * item.quantity}₽
+              </span>
+            </li>
+          )
+        })}
       </ul>
       <div className="text-right font-bold">Итого: {total}₽</div>
     </div>
