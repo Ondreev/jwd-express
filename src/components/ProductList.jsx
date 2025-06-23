@@ -2,26 +2,24 @@ import { ProductCard } from './ProductCard'
 
 export function ProductList({ products, addToCart, discountRules }) {
   if (!Array.isArray(products)) {
-    console.error('❌ products не массив в ProductList:', products)
-    return null
+    console.error('❌ products не массив:', products)
+    return <p className="text-red-500">Ошибка отображения товаров.</p>
   }
 
-  // Находим максимальную скидку (для отображения зачёркнутой цены)
-  const maxDiscount = discountRules?.length
-    ? Math.max(...discountRules.map(rule => rule.percent))
-    : 0
+  // Вычисляем максимальную скидку в процентах
+  const total = products.reduce((sum, item) => sum + Number(item.price || 0), 0)
+  const rule = discountRules
+    .filter(r => total >= r.min)
+    .sort((a, b) => b.min - a.min)[0] || { percent: 0 }
 
   return (
-    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-      {products.map((product, index) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {products.map((product, i) => (
         <ProductCard
-          key={index}
+          key={i}
           product={product}
-          maxDiscount={maxDiscount}
-          addToCart={(p) => {
-            console.log('🛒 Добавляем в корзину:', p)
-            addToCart(p)
-          }}
+          maxDiscount={rule.percent}
+          addToCart={addToCart}
         />
       ))}
     </div>
