@@ -18,7 +18,7 @@ export function Cart({ items, discountRules }) {
   const itemList = Object.values(groupedItems)
 
   const total = itemList.reduce((sum, item) => {
-    const price = Number(item.price)
+    const price = parseFloat(item.price) || 0
     const discountedPrice = maxDiscount
       ? Math.round(price * (1 - maxDiscount / 100))
       : price
@@ -30,7 +30,7 @@ export function Cart({ items, discountRules }) {
       <h2 className="text-xl font-semibold mb-2">Корзина</h2>
       <ul className="mb-4">
         {itemList.map((item, index) => {
-          const price = Number(item.price)
+          const price = parseFloat(item.price) || 0
           const discounted = maxDiscount
             ? Math.round(price * (1 - maxDiscount / 100))
             : price
@@ -38,7 +38,7 @@ export function Cart({ items, discountRules }) {
             <li key={index} className="flex justify-between border-b py-1">
               <span>{item.name} x{item.quantity}</span>
               <span>
-                {maxDiscount && (
+                {maxDiscount > 0 && (
                   <span className="text-sm line-through text-gray-400 mr-2">
                     {price * item.quantity}₽
                   </span>
