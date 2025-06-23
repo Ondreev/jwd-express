@@ -4,14 +4,15 @@ export function ProductCard({ product, addToCart }) {
     image,
     description,
     promo,
-    originalPrice,
-    discountedPrice
+    originalPrice
   } = product
 
-  const hasDiscount =
-    typeof originalPrice === 'number' &&
-    typeof discountedPrice === 'number' &&
-    discountedPrice < originalPrice
+  const hasPromo = promo === true;
+  const discountedPrice = hasPromo
+    ? Math.round(originalPrice * 0.8) // 20% скидка по акции
+    : originalPrice;
+
+  const hasDiscount = discountedPrice < originalPrice;
 
   return (
     <div className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition duration-300 relative">
