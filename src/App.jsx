@@ -41,22 +41,15 @@ function App() {
     <div className="p-4 max-w-screen-md mx-auto">
       <h1 className="text-2xl font-bold mb-4">JWD Express</h1>
 
-      {isAdmin && (
-        <div className="mb-4">
-          <AdminPanel />
-        </div>
-      )}
-
       <ProductList products={products} addToCart={addToCart} discountRules={discountRules} />
       <Cart items={cartItems} discountRules={discountRules} />
       <CheckoutForm items={cartItems} />
 
-      {!isAdmin && (
-        <div className="mt-8">
-          <h2 className="text-lg font-semibold mb-2">Вход для администратора</h2>
-          <Login onLogin={setIsAdmin} />
-        </div>
-      )}
+      <div className="mt-8">
+        <h2 className="text-lg font-semibold mb-2">Вход для администратора</h2>
+        {!isAdmin && <Login onLogin={setIsAdmin} />}
+        {isAdmin && <AdminPanel />}
+      </div>
     </div>
   )
 }
