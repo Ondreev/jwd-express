@@ -59,10 +59,20 @@ function App() {
     <div className="p-4 max-w-screen-md mx-auto">
       <h1 className="text-2xl font-bold mb-4">JWD Express</h1>
 
-      {loading ? (
-        <p>Загрузка товаров...</p>
-      ) : (
-        <ProductList products={products} addToCart={addToCart} discountRules={discountRules} />
+      {loading && <p>Загрузка товаров...</p>}
+
+      {!loading && (
+        <>
+          {products.length > 0 ? (
+            <ProductList
+              products={products}
+              addToCart={addToCart}
+              discountRules={discountRules}
+            />
+          ) : (
+            <p className="text-gray-500">Нет доступных товаров.</p>
+          )}
+        </>
       )}
 
       <Cart items={cartItems} discountRules={discountRules} />
