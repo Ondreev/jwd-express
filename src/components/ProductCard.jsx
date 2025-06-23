@@ -8,7 +8,10 @@ export function ProductCard({ product, addToCart }) {
     discountedPrice
   } = product
 
-  const hasDiscount = discountedPrice && discountedPrice < originalPrice
+  const hasDiscount =
+    typeof originalPrice === 'number' &&
+    typeof discountedPrice === 'number' &&
+    discountedPrice < originalPrice
 
   return (
     <div className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition duration-300 relative">
@@ -19,7 +22,9 @@ export function ProductCard({ product, addToCart }) {
           className="w-full h-40 object-cover rounded mb-3"
         />
         {promo && (
-          <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">АКЦИЯ</span>
+          <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
+            АКЦИЯ
+          </span>
         )}
       </div>
 
@@ -31,7 +36,7 @@ export function ProductCard({ product, addToCart }) {
 
       <div className="mb-3">
         {hasDiscount ? (
-          <div className="space-x-2">
+          <div className="flex flex-col">
             <span className="text-sm line-through text-red-500">{originalPrice}₽</span>
             <span className="text-xl font-bold text-black">{discountedPrice}₽</span>
           </div>
