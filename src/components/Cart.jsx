@@ -27,7 +27,7 @@ export function Cart({ items = [], discountRules = [] }) {
   const finalTotal = totalOriginal - discountAmount
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 mt-6 rounded-2xl shadow-xl space-y-5 text-white">
+    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 mt-6 rounded-2xl shadow-2xl space-y-5 text-white">
       <h2 className="text-2xl font-bold text-white">Корзина</h2>
 
       {uniqueItems.map((item, i) => (
