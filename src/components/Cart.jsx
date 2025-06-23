@@ -26,7 +26,9 @@ export function Cart({ items, discountRules }) {
           Скидка {rule.percent}% (−{discount}₽) за заказ от {rule.min}₽ применена
         </p>
       ) : (
-        <p className="text-sm text-gray-500 mt-1">Скидка применится при заказе от {discountRules.map(r => r.min).join(', ')}₽</p>
+        <p className="text-sm text-gray-500 mt-1">
+          Скидка применится при заказе от {(Array.isArray(discountRules) ? discountRules.map(r => r.min) : []).join(', ')}₽
+        </p>
       )}
     </div>
   )
