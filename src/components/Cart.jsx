@@ -1,11 +1,15 @@
-// Cart.jsx — современный футуристичный стиль
+// Cart.jsx — современный футуристичный стиль с правильной поддержкой скидок
 
 export function Cart({ items, discountRules }) {
   if (!Array.isArray(items) || items.length === 0) return null
 
-  const maxDiscount = discountRules.length > 0
-    ? Math.max(...discountRules.map(r => r.percent))
-    : 0
+  // Определяем скидку для каждой позиции
+  const getDiscountPercent = (price, rules) => {
+    const matchedRule = [...rules]
+      .sort((a, b) => b.min - a.min)
+      .find(rule => price >= rule.min)
+    return matchedRule ? matchedRule.percent : 0
+  }
 
   const groupedItems = items.reduce((acc, item) => {
     const key = item.id || item.name
@@ -18,9 +22,8 @@ export function Cart({ items, discountRules }) {
 
   const total = itemList.reduce((sum, item) => {
     const price = parseFloat(item.price?.toString().replace(/[^\d.]/g, '')) || 0
-    const discountedPrice = maxDiscount
-      ? Math.round(price * (1 - maxDiscount / 100))
-      : price
+    const discountPercent = getDiscountPercent(price * item.quantity, discountRules)
+    const discountedPrice = Math.round(price * (1 - discountPercent / 100))
     return sum + discountedPrice * item.quantity
   }, 0)
 
@@ -30,9 +33,10 @@ export function Cart({ items, discountRules }) {
       <ul className="space-y-2 mb-6">
         {itemList.map((item, index) => {
           const price = parseFloat(item.price?.toString().replace(/[^\d.]/g, '')) || 0
-          const discounted = maxDiscount
-            ? Math.round(price * (1 - maxDiscount / 100))
-            : price
+          const discountPercent = getDiscountPercent(price * item.quantity, discountRules)
+          const discounted = Math.round(price * (1 - discountPercent / 100))
+          const hasDiscount = discountPercent > 0
+
           return (
             <li
               key={index}
@@ -40,12 +44,14 @@ export function Cart({ items, discountRules }) {
             >
               <span className="font-medium">{item.name} <span className="text-gray-400">×{item.quantity}</span></span>
               <span>
-                {maxDiscount > 0 && (
+                {hasDiscount && (
                   <span className="text-sm line-through text-red-400 mr-2">
                     {price * item.quantity}₽
                   </span>
                 )}
-                <span className="text-lg font-semibold">{discounted * item.quantity}₽</span>
+                <span className="text-lg font-bold">
+                  {discounted * item.quantity}₽
+                </span>
               </span>
             </li>
           )
