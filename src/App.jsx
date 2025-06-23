@@ -33,12 +33,16 @@ function App() {
   }, [])
 
   useEffect(() => {
-    fetch('https://script.google.com/macros/s/AKfycbxhfipSAbKIDxove3iOYAzqssmt_YBHFdL9Fp1mnUQYbJRwBxQtAxPZ7AaUxgqkTvbDpw/exec?action=getProducts')
+    fetch('https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLjKj32Emszk_aVk3GKB9aY23lQG6Nkxt4Va2WAe710KiwsXevhrLS2w7DNIs6jEVXFTh6LwZc6U3MvXT19YvV1TgTUEbexYkzsfGQFFjWFZAVAFZKiDq5FHD8fE3Lkj9dZ7EyhkfuYmc_IoK0TgM73Q4CjX4kTy5cdQJEMXt15l4HE-48yp-k4wiDaXbvVVA1YPSXAC8gbarNjKKHNKWlZr6V4CZg_qGs_ykX33J6rXJ4fc1G5deHFdDLxMIC8OmNNreLx-E-V0C_knBjPSDIn0owFxdxD9qCQ0LXYKcmegJta6Kf5PXc6AwIcyig&lib=MV5zt_1yAKnbl-Cizom2A6UBf2lQkhfMZ')
       .then(res => res.json())
       .then(data => {
         console.log('🟢 Products:', data)
         if (Array.isArray(data)) {
-          setProducts(data)
+          const safeData = data.map(product => ({
+            ...product,
+            promo: product.promo === true || product.promo === "TRUE"
+          }))
+          setProducts(safeData)
         } else {
           console.error('❌ Ожидался массив, но получено:', data)
           setProducts([])
