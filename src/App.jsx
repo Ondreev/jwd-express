@@ -10,6 +10,7 @@ function App() {
   const [discountRules, setDiscountRules] = useState([])
   const [products, setProducts] = useState([])
   const [isAdmin, setIsAdmin] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const addToCart = (product) => {
     setCartItems((prev) => [...prev, product])
@@ -32,14 +33,27 @@ function App() {
   useEffect(() => {
     fetch('https://script.google.com/macros/s/AKfycbxhfipSAbKIDxove3iOYAzqssmt_YBHFdL9Fp1mnUQYbJRwBxQtAxPZ7AaUxgqkTvbDpw/exec?action=getProducts')
       .then(res => res.json())
-      .then(setProducts)
+      .then(data => {
+        console.log('🟢 Products:', data)
+        setProducts(data)
+        setLoading(false)
+      })
+      .catch(err => {
+        console.error('Ошибка загрузки товаров:', err)
+        setLoading(false)
+      })
   }, [])
 
   return (
     <div className="p-4 max-w-screen-md mx-auto">
       <h1 className="text-2xl font-bold mb-4">JWD Express</h1>
 
-      <ProductList products={products} addToCart={addToCart} discountRules={discountRules} />
+      {loading ? (
+        <p>Загрузка товаров...</p>
+      ) : (
+        <ProductList products={products} addToCart={addToCart} discountRules={discountRules} />
+      )}
+
       <Cart items={cartItems} discountRules={discountRules} />
       <CheckoutForm items={cartItems} />
 
@@ -52,4 +66,4 @@ function App() {
   )
 }
 
-export default App;
+export default App
