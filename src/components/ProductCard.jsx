@@ -47,7 +47,10 @@ export function ProductCard({ product, addToCart }) {
       </div>
 
       <button
-        onClick={() => addToCart(product)}
+        onClick={() => addToCart({
+          ...product,
+          price: discountedPrice
+        })}
         className="w-full bg-black text-white py-2 rounded-xl hover:bg-gray-800 transition duration-200"
       >
         В корзину
