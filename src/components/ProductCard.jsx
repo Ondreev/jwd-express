@@ -6,7 +6,10 @@ export function ProductCard({ product, addToCart }) {
     return null
   }
 
-  const hasDiscount = product.discountedPrice < product.originalPrice
+  const originalPrice = product.price
+  const discount = product.discount || 0
+  const discountedPrice = Math.round(originalPrice * (1 - discount / 100))
+  const hasDiscount = discount > 0 && discountedPrice < originalPrice
 
   return (
     <div className="border rounded-xl p-4 shadow bg-white flex flex-col">
@@ -25,11 +28,11 @@ export function ProductCard({ product, addToCart }) {
       <div className="mt-auto">
         <div className="mb-2">
           <span className="text-xl font-bold text-black">
-            {product.discountedPrice}₽
+            {discountedPrice}₽
           </span>
           {hasDiscount && (
             <span className="text-sm line-through text-red-500 ml-2">
-              {product.originalPrice}₽
+              {originalPrice}₽
             </span>
           )}
         </div>
