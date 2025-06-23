@@ -16,7 +16,11 @@ export function ProductList({ products, addToCart, discountRules }) {
         return (
           <ProductCard
             key={product.id}
-            product={{ ...product, discountedPrice, originalPrice: price }}
+            product={{
+              ...product,
+              discountedPrice,
+              originalPrice: price
+            }}
             addToCart={addToCart}
             maxDiscount={maxDiscount}
           />
@@ -25,4 +29,5 @@ export function ProductList({ products, addToCart, discountRules }) {
     </div>
   )
 }
+
 
