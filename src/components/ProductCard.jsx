@@ -1,3 +1,5 @@
+// ProductCard.jsx
+
 console.log('🧩 ProductCard получает:', product)
 
 export function ProductCard({ product, maxDiscount, addToCart }) {
@@ -41,4 +43,4 @@ export function ProductCard({ product, maxDiscount, addToCart }) {
       </button>
     </div>
   )
-}
+} 
