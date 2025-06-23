@@ -10,14 +10,21 @@ export function ProductList({ products, addToCart, discountRules }) {
 
   return (
     <div className="grid gap-4">
-      {products.map((product) => (
-        <ProductCard
-          key={product.id}
-          product={product}
-          maxDiscount={maxRule.percent}
-          addToCart={addToCart}
-        />
-      ))}
+      {products.map((product, i) => {
+        if (!product || typeof product !== 'object') {
+          console.warn(`❌ Ошибочный продукт на позиции ${i}:`, product)
+          return null
+        }
+
+        return (
+          <ProductCard
+            key={product.id ?? i}
+            product={product}
+            maxDiscount={maxRule.percent}
+            addToCart={addToCart}
+          />
+        )
+      })}
     </div>
   )
 }
