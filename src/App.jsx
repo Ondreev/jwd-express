@@ -13,6 +13,7 @@ function App() {
   const [products, setProducts] = useState([])
   const [isAdmin, setIsAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [productsError, setProductsError] = useState(false)
 
   const addToCart = (product) => {
     setCartItems((prev) => [...prev, product])
@@ -40,17 +41,19 @@ function App() {
         if (Array.isArray(data)) {
           const safeData = data.map(product => ({
             ...product,
-            promo: product.promo === true || product.promo === "TRUE"
+            promo: product.promo === true || product.promo === 'TRUE'
           }))
           setProducts(safeData)
+          setProductsError(false)
         } else {
           console.error('❌ products не массив:', data)
-          setProducts([])
+          setProductsError(true)
         }
         setLoading(false)
       })
       .catch(err => {
         console.error('Ошибка загрузки товаров:', err)
+        setProductsError(true)
         setLoading(false)
       })
   }, [])
@@ -61,7 +64,11 @@ function App() {
 
       {loading && <p>Загрузка товаров...</p>}
 
-      {!loading && Array.isArray(products) ? (
+      {!loading && productsError && (
+        <p className="text-red-500">Ошибка загрузки данных.</p>
+      )}
+
+      {!loading && !productsError && (
         products.length > 0 ? (
           <ProductList
             products={products}
@@ -71,8 +78,6 @@ function App() {
         ) : (
           <p className="text-gray-500">Нет доступных товаров.</p>
         )
-      ) : (
-        <p className="text-red-500">Ошибка загрузки данных.</p>
       )}
 
       <Cart items={cartItems} discountRules={discountRules} />
