@@ -29,7 +29,11 @@ function App() {
             const [min, percent] = value.split(':').map(Number)
             return { min, percent }
           })
-        setDiscountRules(rules)
+        setDiscountRules(Array.isArray(rules) ? rules : [])
+      })
+      .catch(err => {
+        console.error('Ошибка загрузки скидок:', err)
+        setDiscountRules([])
       })
   }, [])
 
@@ -73,15 +77,19 @@ function App() {
           <ProductList
             products={products}
             addToCart={addToCart}
-            discountRules={discountRules}
+            discountRules={Array.isArray(discountRules) ? discountRules : []}
           />
         ) : (
           <p className="text-gray-500">Нет доступных товаров.</p>
         )
       )}
 
-      <Cart items={cartItems} discountRules={discountRules} />
-      <CheckoutForm items={cartItems} />
+      <Cart
+        items={cartItems}
+        discountRules={Array.isArray(discountRules) ? discountRules : []}
+      />
+
+      {cartItems.length > 0 && <CheckoutForm items={cartItems} />}
 
       <div className="mt-8">
         <h2 className="text-lg font-semibold mb-2">Вход для администратора</h2>
