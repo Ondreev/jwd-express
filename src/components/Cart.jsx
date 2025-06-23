@@ -27,11 +27,11 @@ export function Cart({ items = [], discountRules = [] }) {
   const finalTotal = totalOriginal - discountAmount
 
   return (
-    <div className="bg-white p-4 mt-6 rounded-xl shadow space-y-4">
-      <h2 className="text-xl font-bold">Корзина</h2>
+    <div className="bg-gradient-to-br from-zinc-100 to-white p-6 mt-6 rounded-2xl shadow-xl space-y-5">
+      <h2 className="text-2xl font-bold text-gray-800">Корзина</h2>
 
       {uniqueItems.map((item, i) => (
-        <div key={i} className="flex justify-between items-center border-b pb-2 text-sm">
+        <div key={i} className="flex justify-between items-center border-b pb-2 text-sm text-gray-700">
           <span>
             {item.name} x{item.quantity}
           </span>
@@ -40,12 +40,12 @@ export function Cart({ items = [], discountRules = [] }) {
       ))}
 
       {discountPercent > 0 && (
-        <div className="text-yellow-500 font-bold text-sm mt-2">
+        <div className="text-yellow-600 font-bold text-base mt-2">
           Вы сэкономили {discountPercent}% / {formatPrice(discountAmount)}
         </div>
       )}
 
-      <div className="flex justify-between font-bold text-lg pt-3 border-t">
+      <div className="flex justify-between font-bold text-xl pt-4 border-t border-gray-200 text-gray-900">
         <span>Итого:</span>
         <span>{formatPrice(finalTotal)}</span>
       </div>
