@@ -14,6 +14,8 @@ export function ProductCard({ product, addToCart }) {
 
   const hasDiscount = discountedPrice < originalPrice;
 
+  const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽';
+
   return (
     <div className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition duration-300 relative">
       <div className="relative">
@@ -38,11 +40,11 @@ export function ProductCard({ product, addToCart }) {
       <div className="mb-3">
         {hasDiscount ? (
           <div className="flex flex-col">
-            <span className="text-sm line-through text-red-500">{originalPrice}₽</span>
-            <span className="text-xl font-bold text-black">{discountedPrice}₽</span>
+            <span className="text-sm line-through text-red-500">{formatPrice(originalPrice)}</span>
+            <span className="text-xl font-bold text-black">{formatPrice(discountedPrice)}</span>
           </div>
         ) : (
-          <span className="text-lg font-bold text-black">{originalPrice}₽</span>
+          <span className="text-lg font-bold text-black">{formatPrice(originalPrice)}</span>
         )}
       </div>
 
