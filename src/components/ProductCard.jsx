@@ -1,10 +1,12 @@
 // ProductCard.jsx — карточка товара с отображением скидки и зачёркнутой цены
 
-export function ProductCard({ product, maxDiscount, addToCart }) {
+export function ProductCard({ product, addToCart }) {
   if (!product || typeof product !== 'object') {
     console.warn('❌ Неверный формат product:', product)
     return null
   }
+
+  const hasDiscount = product.discountedPrice < product.originalPrice
 
   return (
     <div className="border rounded-xl p-4 shadow bg-white flex flex-col">
@@ -25,7 +27,7 @@ export function ProductCard({ product, maxDiscount, addToCart }) {
           <span className="text-xl font-bold text-black">
             {product.discountedPrice}₽
           </span>
-          {product.discountedPrice !== product.originalPrice && (
+          {hasDiscount && (
             <span className="text-sm line-through text-red-500 ml-2">
               {product.originalPrice}₽
             </span>
