@@ -39,14 +39,18 @@ function App() {
   }, [])
 
   return (
-    <div className="p-4 max-w-screen-md mx-auto">
-      <h1 className="text-2xl font-bold mb-4">JWD Express</h1>
-      <ProductList products={products} addToCart={addToCart} discountRules={discountRules} />
-      <Cart items={cartItems} discountRules={discountRules} />
-      <CheckoutForm items={cartItems} />
-      {isAdmin ? <AdminPanel /> : <Login onLogin={setIsAdmin} />}
-    </div>
-  )
+  <div className="p-4 max-w-screen-md mx-auto">
+    <h1 className="text-2xl font-bold mb-4">JWD Express</h1>
+
+    {!isAdmin && <Login onLogin={setIsAdmin} />}
+    {isAdmin && <AdminPanel />}
+
+    <ProductList products={products} addToCart={addToCart} discountRules={discountRules} />
+    <Cart items={cartItems} discountRules={discountRules} />
+    <CheckoutForm items={cartItems} />
+  </div>
+)
+
 }
 
 export default App;
