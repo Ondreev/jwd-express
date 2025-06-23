@@ -1,8 +1,5 @@
 export function ProductCard({ product, addToCart }) {
-  if (!product || typeof product !== 'object') {
-    console.warn('❌ Неверный формат product:', product)
-    return null
-  }
+  if (!product || typeof product !== 'object') return null
 
   const hasDiscount = product.discount && product.discount > 0
   const discountedPrice = hasDiscount
