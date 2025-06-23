@@ -9,7 +9,7 @@ export function ProductList({ products, addToCart, discountRules }) {
 
   return (
     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-      {products.map((product) => (
+      {products.map(product => (
         <ProductCard
           key={product.id}
           product={product}
