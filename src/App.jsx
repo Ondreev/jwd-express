@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
 import { ProductList } from './components/ProductList'
+import { Cart } from './components/Cart'
+import { CheckoutForm } from './components/CheckoutForm'
 
 function App() {
   const [products, setProducts] = useState([])
   const [cartItems, setCartItems] = useState([])
 
   const addToCart = (product) => {
-    setCartItems((prev) => [...prev, product])
     console.log('🛒 Добавлено в корзину:', product.name)
+    setCartItems(prev => [...prev, product])
   }
 
   useEffect(() => {
@@ -30,7 +32,19 @@ function App() {
   return (
     <div className="max-w-xl mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">JWD Express</h1>
-      <ProductList products={products} addToCart={addToCart} discountRules={[]} />
+
+      <ProductList
+        products={products}
+        addToCart={addToCart}
+        discountRules={[]} // или можешь позже добавить реальные скидки
+      />
+
+      <Cart
+        items={cartItems}
+        discountRules={[]}
+      />
+
+      <CheckoutForm items={cartItems} />
     </div>
   )
 }
