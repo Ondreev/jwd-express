@@ -1,38 +1,40 @@
+// Cart.jsx — компонент корзины
+
 export function Cart({ items, discountRules }) {
-  const total = items.reduce((sum, item) => sum + item.price, 0)
+  if (!Array.isArray(items) || items.length === 0) return null
 
-  const rule = Array.isArray(discountRules)
-    ? discountRules.filter(r => total >= r.min).sort((a, b) => b.min - a.min)[0]
-    : { percent: 0 }
+  const maxDiscount = discountRules.length > 0
+    ? Math.max(...discountRules.map(r => r.percent))
+    : 0
 
-  const discount = rule ? Math.floor((rule.percent / 100) * total) : 0
+  const total = items.reduce((sum, item) => {
+    const discountedPrice = maxDiscount
+      ? Math.round(item.price * (1 - maxDiscount / 100))
+      : item.price
+    return sum + discountedPrice
+  }, 0)
 
   return (
-    <div className="mt-6 bg-gray-100 rounded-xl p-4">
-      <h2 className="text-lg font-semibold mb-2">Ваш заказ</h2>
-
-      {items.map((item, i) => (
-        <div key={i} className="flex justify-between">
-          <span>{item.name}</span>
-          <span>{item.price}₽</span>
-        </div>
-      ))}
-
-      <hr className="my-2" />
-      <div className="flex justify-between">
-        <span>Итого:</span>
-        <span>{total - discount}₽</span>
-      </div>
-
-      {rule && rule.percent > 0 ? (
-        <p className="text-sm text-green-600 mt-1">
-          Скидка {rule.percent}% (−{discount}₽) за заказ от {rule.min}₽ применена
-        </p>
-      ) : (
-        <p className="text-sm text-gray-500 mt-1">
-          Скидка применится при заказе от {(Array.isArray(discountRules) ? discountRules.map(r => r.min).join(', ') : '...')}₽
-        </p>
-      )}
+    <div className="mt-6 p-4 border rounded shadow bg-white">
+      <h2 className="text-xl font-semibold mb-2">Корзина</h2>
+      <ul className="mb-4">
+        {items.map((item, index) => (
+          <li key={index} className="flex justify-between border-b py-1">
+            <span>{item.name}</span>
+            <span>
+              {maxDiscount && (
+                <span className="text-sm line-through text-gray-400 mr-2">
+                  {item.price}₽
+                </span>
+              )}
+              {maxDiscount
+                ? Math.round(item.price * (1 - maxDiscount / 100))
+                : item.price}₽
+            </span>
+          </li>
+        ))}
+      </ul>
+      <div className="text-right font-bold">Итого: {total}₽</div>
     </div>
   )
 }
