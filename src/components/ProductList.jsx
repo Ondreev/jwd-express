@@ -1,25 +1,20 @@
-// ProductList.jsx — список товаров с кнопками добавления в корзину
+// ProductList.jsx — отображение списка товаров с применением скидок
 
 import { ProductCard } from './ProductCard'
 
 export function ProductList({ products, addToCart, discountRules }) {
-  if (!Array.isArray(products)) {
-    console.error('❌ products не массив:', products)
-    return <p>Ошибка загрузки товаров</p>
-  }
-
-  const maxDiscount = discountRules.length > 0
-    ? Math.max(...discountRules.map(r => r.percent))
-    : 0
+  const totalSum = products.reduce((sum, p) => sum + (parseFloat(p.price) || 0), 0)
+  const matchedRule = [...discountRules].sort((a, b) => b.min - a.min).find(rule => totalSum >= rule.min)
+  const maxDiscount = matchedRule ? matchedRule.percent : 0
 
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
       {products.map(product => (
         <ProductCard
           key={product.id}
           product={product}
+          addToCart={addToCart}
           maxDiscount={maxDiscount}
-          addToCart={addToCart} // 🟢 добавление этой строки обязательно
         />
       ))}
     </div>
