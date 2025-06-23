@@ -8,6 +8,15 @@ export function ProductCard({ product, maxDiscount, addToCart }) {
     ? Math.round(product.price * (1 - maxDiscount / 100))
     : product.price
 
+  const handleClick = () => {
+    console.log('🛒 Клик по товару:', product.name)
+    if (typeof addToCart === 'function') {
+      addToCart(product)
+    } else {
+      console.warn('❌ addToCart не функция')
+    }
+  }
+
   return (
     <div className="border rounded p-4 shadow">
       <img
@@ -32,7 +41,7 @@ export function ProductCard({ product, maxDiscount, addToCart }) {
       </div>
 
       <button
-        onClick={() => addToCart(product)}
+        onClick={handleClick}
         className="mt-2 px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
       >
         В корзину
