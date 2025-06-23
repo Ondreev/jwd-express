@@ -27,24 +27,8 @@ export function Cart({ items = [], discountRules = [] }) {
   const finalTotal = totalOriginal - discountAmount
 
   return (
-    <div className="bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 p-6 mt-6 rounded-2xl shadow-2xl space-y-5 text-white">
-      <style>{`
-        body {
-          background: linear-gradient(to bottom right, #1a1a1a, #2c2c2c);
-        }
-        h1 {
-          color: white !important;
-          font-weight: 800 !important;
-        }
-        .fancy-block {
-          background: linear-gradient(to bottom right, #27272a, #1a1a1a);
-          border-radius: 1rem;
-          box-shadow: 0 0 20px rgba(0,0,0,0.5);
-          padding: 1.5rem;
-        }
-      `}</style>
-
-      <h2 className="text-2xl font-bold text-white">Корзина</h2>
+    <div className="fancy-block mt-6 text-white">
+      <h2 className="text-2xl font-bold">Корзина</h2>
 
       {uniqueItems.map((item, i) => (
         <div key={i} className="flex justify-between items-center border-b pb-2 text-sm text-gray-300">
@@ -61,7 +45,7 @@ export function Cart({ items = [], discountRules = [] }) {
         </div>
       )}
 
-      <div className="flex justify-between font-bold text-xl pt-4 border-t border-gray-700 text-white">
+      <div className="flex justify-between font-bold text-xl pt-4 border-t border-gray-700">
         <span>Итого:</span>
         <span>{formatPrice(finalTotal)}</span>
       </div>
