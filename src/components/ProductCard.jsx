@@ -1,51 +1,44 @@
+// ProductCard.jsx — карточка товара с отображением скидки и зачёркнутой цены
+
 export function ProductCard({ product, maxDiscount, addToCart }) {
   if (!product || typeof product !== 'object') {
     console.warn('❌ Неверный формат product:', product)
     return null
   }
 
-  const priceWithDiscount = maxDiscount
-    ? Math.round(product.price * (1 - maxDiscount / 100))
-    : product.price
-
-  const handleClick = () => {
-    console.log('🛒 Клик по товару:', product.name)
-    if (typeof addToCart === 'function') {
-      addToCart(product)
-    } else {
-      console.warn('❌ addToCart не функция')
-    }
-  }
-
   return (
-    <div className="border rounded p-4 shadow">
+    <div className="border rounded-xl p-4 shadow bg-white flex flex-col">
       <img
         src={product.image}
         alt={product.name}
-        className="w-full h-40 object-cover mb-2"
+        className="w-full h-40 object-cover mb-3 rounded"
       />
-      <h3 className="text-lg font-semibold">{product.name}</h3>
-      <p className="text-gray-600">{product.description}</p>
+      <h3 className="text-lg font-semibold mb-1">{product.name}</h3>
+      <p className="text-sm text-gray-600 mb-2">{product.description}</p>
 
       {product.promo && (
-        <span className="text-sm text-red-500 font-bold">АКЦИЯ!</span>
+        <span className="text-xs text-red-600 font-bold mb-1">АКЦИЯ!</span>
       )}
 
-      <div className="mt-2">
-        <span className="font-bold">{priceWithDiscount}₽</span>
-        {priceWithDiscount !== product.price && (
-          <span className="text-sm line-through text-gray-400 ml-2">
-            {product.price}₽
+      <div className="mt-auto">
+        <div className="mb-2">
+          <span className="text-xl font-bold text-black">
+            {product.discountedPrice}₽
           </span>
-        )}
-      </div>
+          {product.discountedPrice !== product.originalPrice && (
+            <span className="text-sm line-through text-red-500 ml-2">
+              {product.originalPrice}₽
+            </span>
+          )}
+        </div>
 
-      <button
-        onClick={handleClick}
-        className="mt-2 px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        В корзину
-      </button>
+        <button
+          onClick={() => addToCart(product)}
+          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+        >
+          В корзину
+        </button>
+      </div>
     </div>
   )
 }
