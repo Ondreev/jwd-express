@@ -9,8 +9,23 @@ function App() {
   const [discountRules, setDiscountRules] = useState([])
 
   const addToCart = (product) => {
-    console.log('🛒 Добавлено в корзину:', product.name)
     setCartItems(prev => [...prev, product])
+  }
+
+  const removeFromCart = (productId) => {
+    setCartItems(prev => {
+      const index = prev.findIndex(p => p.id === productId)
+      if (index !== -1) {
+        const newCart = [...prev]
+        newCart.splice(index, 1)
+        return newCart
+      }
+      return prev
+    })
+  }
+
+  const getQuantity = (productId) => {
+    return cartItems.filter(item => item.id === productId).length
   }
 
   useEffect(() => {
@@ -51,6 +66,8 @@ function App() {
         <ProductList
           products={products}
           addToCart={addToCart}
+          removeFromCart={removeFromCart}
+          getQuantity={getQuantity}
           discountRules={discountRules}
         />
 
