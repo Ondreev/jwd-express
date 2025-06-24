@@ -42,15 +42,15 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
       <p className="text-sm text-gray-300 mb-2">{description}</p>
 
       <div className="mb-3">
-        {hasDiscount ? (
-          <div className="flex flex-col">
-            <span className="text-sm line-through text-red-400">{formatPrice(originalPrice)}</span>
-            <span className="text-xl font-bold text-yellow-300">{formatPrice(discountedPrice)}</span>
-          </div>
-        ) : (
-          <span className="text-lg font-bold text-yellow-300">{formatPrice(originalPrice)}</span>
-        )}
-      </div>
+  {hasDiscount ? (
+    <div className="flex items-baseline gap-2">
+      <span className="text-xl font-bold text-yellow-300">{formatPrice(discountedPrice)}</span>
+      <span className="text-sm line-through text-red-400">{formatPrice(originalPrice)}</span>
+    </div>
+  ) : (
+    <span className="text-lg font-bold text-yellow-300">{formatPrice(originalPrice)}</span>
+  )}
+</div>
 
       {quantity === 0 ? (
         <button
