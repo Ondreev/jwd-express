@@ -17,29 +17,28 @@ export function CheckoutForm({ items }) {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+  e.preventDefault()
+  setLoading(true)
 
-    const order = {
-      ...formData,
-      items: items.map(({ name, price }) => `${name} - ${price}₽`).join(', '),
-      total: items.reduce((sum, item) => sum + item.price, 0)
-    }
+  const query = new URLSearchParams({
+    action: 'addOrder',
+    name: formData.name,
+    whatsapp: formData.phone,
+    address: formData.address,
+    note: formData.note,
+    order: items.map(({ name, price }) => `${name} - ${price}₽`).join(', ')
+  }).toString()
 
-    try {
-      const res = await fetch("https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec", {
-        method: 'POST',
-        body: JSON.stringify(order),
-        headers: { 'Content-Type': 'application/json' }
-      })
-      const data = await res.json()
-      if (data.result === 'success') setSuccess(true)
-    } catch (err) {
-      console.error('Ошибка при отправке:', err)
-    } finally {
-      setLoading(false)
-    }
+  try {
+    const res = await fetch(`https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec?${query}`)
+    const data = await res.json()
+    if (data.status === 'ok') setSuccess(true)
+  } catch (err) {
+    console.error('Ошибка при отправке:', err)
+  } finally {
+    setLoading(false)
   }
+}
 
   if (items.length === 0) return null
 
