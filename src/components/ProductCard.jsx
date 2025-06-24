@@ -1,8 +1,5 @@
-import { useState } from 'react'
-
-export function ProductCard({ product, addToCart, removeFromCart, getQuantity }) {
+export function ProductCard({ product, addToCart }) {
   const {
-    id,
     name,
     image,
     description,
@@ -12,11 +9,10 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
 
   const hasPromo = promo === true;
   const discountedPrice = hasPromo
-    ? Math.round(originalPrice * 0.8)
+    ? Math.round(originalPrice * 0.8) // 20% скидка по акции
     : originalPrice;
 
   const hasDiscount = discountedPrice < originalPrice;
-  const quantity = getQuantity(id);
 
   const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽';
 
@@ -52,30 +48,15 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
         )}
       </div>
 
-      {quantity === 0 ? (
-        <button
-          onClick={() => addToCart({ ...product, price: discountedPrice, originalPrice })}
-          className="w-full bg-black text-white py-2 rounded-xl hover:bg-gray-800 transition duration-200"
-        >
-          В корзину
-        </button>
-      ) : (
-        <div className="flex items-center justify-between gap-2">
-          <button
-            onClick={() => removeFromCart(id)}
-            className="bg-gray-300 text-black w-8 h-8 rounded-full font-bold text-xl hover:bg-gray-400"
-          >
-            −
-          </button>
-          <span className="font-semibold text-lg">{quantity}</span>
-          <button
-            onClick={() => addToCart({ ...product, price: discountedPrice, originalPrice })}
-            className="bg-black text-white w-8 h-8 rounded-full font-bold text-xl hover:bg-gray-800"
-          >
-            +
-          </button>
-        </div>
-      )}
+      <button
+        onClick={() => addToCart({
+          ...product,
+          price: discountedPrice
+        })}
+        className="w-full bg-black text-white py-2 rounded-xl hover:bg-gray-800 transition duration-200"
+      >
+        В корзину
+      </button>
     </div>
   )
 }
