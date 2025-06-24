@@ -1,8 +1,6 @@
-// ProductList.jsx — отображение списка товаров с применением скидок
-
 import { ProductCard } from './ProductCard'
 
-export function ProductList({ products, addToCart, discountRules }) {
+export function ProductList({ products, addToCart, removeFromCart, getQuantity, discountRules }) {
   const totalSum = products.reduce((sum, p) => sum + (parseFloat(p.price) || 0), 0)
   const matchedRule = [...discountRules].sort((a, b) => b.min - a.min).find(rule => totalSum >= rule.min)
   const maxDiscount = matchedRule ? matchedRule.percent : 0
@@ -22,12 +20,11 @@ export function ProductList({ products, addToCart, discountRules }) {
               originalPrice: price
             }}
             addToCart={addToCart}
-            maxDiscount={maxDiscount}
+            removeFromCart={removeFromCart}
+            getQuantity={getQuantity}
           />
         )
       })}
     </div>
   )
 }
-
-
