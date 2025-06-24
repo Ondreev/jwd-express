@@ -21,7 +21,7 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
   const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽';
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition duration-300 relative">
+    <div className="fancy-block relative">
       <div className="relative">
         <img
           src={image}
@@ -36,19 +36,19 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
       </div>
 
       <div className="flex justify-between items-start mb-1">
-        <h2 className="text-lg font-semibold leading-tight">{name}</h2>
+        <h2 className="text-lg font-semibold leading-tight text-white">{name}</h2>
       </div>
 
-      <p className="text-sm text-gray-600 mb-2">{description}</p>
+      <p className="text-sm text-gray-300 mb-2">{description}</p>
 
       <div className="mb-3">
         {hasDiscount ? (
           <div className="flex flex-col">
-            <span className="text-sm line-through text-red-500">{formatPrice(originalPrice)}</span>
-            <span className="text-xl font-bold text-black">{formatPrice(discountedPrice)}</span>
+            <span className="text-sm line-through text-red-400">{formatPrice(originalPrice)}</span>
+            <span className="text-xl font-bold text-white">{formatPrice(discountedPrice)}</span>
           </div>
         ) : (
-          <span className="text-lg font-bold text-black">{formatPrice(originalPrice)}</span>
+          <span className="text-lg font-bold text-white">{formatPrice(originalPrice)}</span>
         )}
       </div>
 
@@ -67,7 +67,7 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
           >
             −
           </button>
-          <span className="font-semibold text-lg">{quantity}</span>
+          <span className="font-semibold text-lg text-white">{quantity}</span>
           <button
             onClick={() => addToCart({ ...product, price: discountedPrice, originalPrice })}
             className="bg-black text-white w-8 h-8 rounded-full font-bold text-xl hover:bg-gray-800"
