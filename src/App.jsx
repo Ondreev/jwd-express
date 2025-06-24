@@ -6,6 +6,7 @@ import { CheckoutForm } from './components/CheckoutForm'
 function App() {
   const [products, setProducts] = useState([])
   const [cartItems, setCartItems] = useState([])
+  const [discountRules, setDiscountRules] = useState([])
 
   const addToCart = (product) => {
     console.log('🛒 Добавлено в корзину:', product.name)
@@ -27,22 +28,35 @@ function App() {
         }
       })
       .catch(console.error)
+
+    fetch('https://script.google.com/macros/s/AKfycbxhfipSAbKIDxove3iOYAzqssmt_YBHFdL9Fp1mnUQYbJRwBxQtAxPZ7AaUxgqkTvbDpw/exec?action=getSettings')
+      .then(res => res.json())
+      .then(data => {
+        const rules = Object.entries(data)
+          .filter(([key]) => key.startsWith('discount_rule_'))
+          .map(([_, value]) => {
+            const [min, percent] = value.split(':').map(Number)
+            return { min, percent }
+          })
+        setDiscountRules(rules)
+      })
+      .catch(console.error)
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white p-4">
-      <h1 className="text-4xl font-extrabold mb-6 text-center text-white">JWD Express</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
+      <div className="max-w-xl mx-auto p-4">
+        <h1 className="text-4xl font-bold mb-6">JWD Express</h1>
 
-      <div className="max-w-3xl mx-auto">
         <ProductList
           products={products}
           addToCart={addToCart}
-          discountRules={[]}
+          discountRules={discountRules}
         />
 
         <Cart
           items={cartItems}
-          discountRules={[]}
+          discountRules={discountRules}
         />
 
         <CheckoutForm items={cartItems} />
