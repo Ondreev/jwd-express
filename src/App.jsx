@@ -44,7 +44,7 @@ function App() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className="min-h-screen text-black">
       <div className="max-w-xl mx-auto p-4">
         <h1 className="text-4xl font-bold mb-6 text-black tracking-wide uppercase">JWD Express</h1>
 
