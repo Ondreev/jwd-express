@@ -1,4 +1,8 @@
-/* src/index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* если был явный белый фон — убери: */
+body {
+  @apply bg-gray-900 text-white;
+}
