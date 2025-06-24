@@ -64,7 +64,7 @@ function App() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4">
+    <div className="min-h-screen bg-gray-700 text-white p-4 max-w-screen-md mx-auto">
       <h1 className="text-3xl font-bold text-white mb-6">JWD Express</h1>
 
       <ProductList
