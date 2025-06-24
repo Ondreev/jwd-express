@@ -27,7 +27,7 @@ export function CheckoutForm({ items }) {
     }
 
     try {
-      const res = await fetch("https://script.google.com/macros/s/PASTE_YOUR_SCRIPT_URL_HERE/exec", {
+      const res = await fetch("https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec", {
         method: 'POST',
         body: JSON.stringify(order),
         headers: { 'Content-Type': 'application/json' }
