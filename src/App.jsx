@@ -25,7 +25,7 @@ function App() {
   }
 
   const getQuantity = (productId) => {
-    return cartItems.filter(item => item.id === productId).length
+    return cartItems.filter(p => p.id === productId).length
   }
 
   useEffect(() => {
@@ -43,7 +43,9 @@ function App() {
         }
       })
       .catch(console.error)
+  }, [])
 
+  useEffect(() => {
     fetch('https://script.google.com/macros/s/AKfycbxhfipSAbKIDxove3iOYAzqssmt_YBHFdL9Fp1mnUQYbJRwBxQtAxPZ7AaUxgqkTvbDpw/exec?action=getSettings')
       .then(res => res.json())
       .then(data => {
@@ -55,29 +57,27 @@ function App() {
           })
         setDiscountRules(rules)
       })
-      .catch(console.error)
+      .catch(err => {
+        console.error('Ошибка загрузки скидок:', err)
+        setDiscountRules([])
+      })
   }, [])
 
   return (
-    <div className="bg-gray-900 min-h-screen text-white">
-      <div className="max-w-xl mx-auto p-4">
-        <h1 className="text-4xl font-bold mb-6 text-white tracking-wide uppercase">JWD Express</h1>
+    <div className="max-w-xl mx-auto p-4">
+      <h1 className="text-3xl font-bold text-white mb-6">JWD Express</h1>
 
-        <ProductList
-          products={products}
-          addToCart={addToCart}
-          removeFromCart={removeFromCart}
-          getQuantity={getQuantity}
-          discountRules={discountRules}
-        />
+      <ProductList
+        products={products}
+        addToCart={addToCart}
+        removeFromCart={removeFromCart}
+        getQuantity={getQuantity}
+        discountRules={discountRules}
+      />
 
-        <Cart
-          items={cartItems}
-          discountRules={discountRules}
-        />
+      <Cart items={cartItems} discountRules={discountRules} />
 
-        <CheckoutForm items={cartItems} />
-      </div>
+      <CheckoutForm items={cartItems} />
     </div>
   )
 }
