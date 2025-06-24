@@ -1,39 +1,39 @@
 export function CheckoutForm({ items }) {
-  const hasItems = Array.isArray(items) && items.length > 0
+  if (items.length === 0) return null
 
   return (
-    <form className="mt-6 bg-white p-4 rounded-xl shadow space-y-3">
-      <h2 className="text-lg font-semibold">
-        Оформление заказа {hasItems ? '' : '(товары ещё не выбраны)'}
-      </h2>
+    <form className="fancy-block mt-6 text-white">
+      <h2 className="text-2xl font-bold mb-4">Оформление заказа</h2>
 
       <input
         type="text"
         placeholder="Ваше имя"
         required
-        className="w-full border rounded p-2"
+        className="w-full mb-3 p-3 rounded-xl bg-gray-800 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
       />
+
       <input
         type="tel"
         placeholder="Номер WhatsApp"
         required
-        className="w-full border rounded p-2"
+        className="w-full mb-3 p-3 rounded-xl bg-gray-800 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
       />
+
       <input
         type="text"
         placeholder="Адрес доставки"
         required
-        className="w-full border rounded p-2"
+        className="w-full mb-3 p-3 rounded-xl bg-gray-800 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
       />
+
       <textarea
         placeholder="Примечание"
-        className="w-full border rounded p-2"
+        className="w-full mb-4 p-3 rounded-xl bg-gray-800 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
       ></textarea>
 
       <button
         type="submit"
-        className="bg-black text-white px-4 py-2 rounded-xl disabled:opacity-50"
-        disabled={!hasItems}
+        className="w-full bg-yellow-500 text-black py-3 rounded-xl font-bold hover:bg-yellow-600 transition"
       >
         Отправить заказ
       </button>
