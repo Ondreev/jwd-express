@@ -40,17 +40,14 @@ function getDiscountRules(settings) {
   return Object.entries(settings)
     .filter(([k]) => k.startsWith('discount_rule_'))
     .map(([, v]) => {
-      const [threshold, percent] = v.split(':').map(Number)
-      return { threshold, percent }
+      const [min, percent] = v.split(':').map(Number)
+      return { min, percent }
     })
-    .sort((a, b) => b.threshold - a.threshold)
+    .sort((a, b) => b.min - a.min)
 }
 
 function getBestDiscount(total, rules) {
-  for (let rule of rules) {
-    if (total >= rule.threshold) return rule
-  }
-  return { percent: 0, threshold: 0 }
+  return [...rules].sort((a, b) => b.min - a.min).find(rule => total >= rule.min) || { percent: 0, min: 0 }
 }
 
 export function AdminPanel() {
@@ -75,8 +72,9 @@ export function AdminPanel() {
       {orders.map((order, i) => {
         const items = parseItems(order['Заказ'] || '')
         const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-        const { percent, threshold } = getBestDiscount(total, discountRules)
-        const discountAmount = Math.round((total * percent) / 100)
+        const matchedRule = [...discountRules].sort((a, b) => b.min - a.min).find(rule => total >= rule.min)
+        const maxDiscount = matchedRule ? matchedRule.percent : 0
+        const discountAmount = Math.round(total * maxDiscount / 100)
         const finalTotal = total - discountAmount
 
         return (
@@ -104,9 +102,9 @@ export function AdminPanel() {
               <div className="text-gray-500 text-sm italic">Нет товаров</div>
             )}
 
-            {percent > 0 && (
+            {maxDiscount > 0 && (
               <div className="text-yellow-400 font-semibold text-sm mt-2">
-                Скидка {percent}%: −{formatPrice(discountAmount)}
+                Скидка {maxDiscount}%: −{formatPrice(discountAmount)}
               </div>
             )}
 
