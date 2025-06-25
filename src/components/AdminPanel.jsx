@@ -22,13 +22,16 @@ function formatPrice(price) {
 
 function parseItems(orderStr) {
   const items = []
-  const parts = orderStr.split(',').map(p => p.trim())
+  const parts = orderStr.split(', ').map(p => p.trim())
+
   for (let part of parts) {
+    part = part.replace(/^"|"$/g, '') // убираем кавычки по краям
     const match = part.match(/^(.+?) - (\d+)\s?₽$/)
     if (match) {
       items.push({ name: match[1], price: parseInt(match[2]), quantity: 1 })
     }
   }
+
   const grouped = {}
   for (let item of items) {
     const key = `${item.name}-${item.price}`
