@@ -5,8 +5,6 @@ const CSV_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vR322Pt499Vfg2H8lFKITDC7GIJiZgkq4tubdCKCZR87zeqRVhRBx8NoGk9RL09slKkOT0sFrJaOelE/pub?gid=1075610539&single=true&output=csv'
 const SETTINGS_URL =
   'https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec?action=getSettings'
-const PRODUCTS_URL =
-  'https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec?action=getProducts'
 
 function parseCSV(text) {
   const { data } = Papa.parse(text.trim(), { header: true, skipEmptyLines: true })
@@ -17,27 +15,25 @@ function formatPrice(price) {
   return price.toLocaleString('ru-RU') + '₽'
 }
 
-function parseItems(orderStr, productsList = []) {
+function parseItems(orderStr) {
   const items = []
-  const parts = orderStr.split(/\r?\n/).map(p => p.trim()).filter(Boolean)
+  const cleanedStr = orderStr.replace(/[₽|в‚Ѕ]/g, '₽')
+  const parts = cleanedStr.split(/,(?![^"]*")/).map(p => p.trim()).filter(Boolean)
 
   for (let part of parts) {
-    const match = part.match(/^(.+?) x(\d+)$/)
+    const match = part.match(/^(.+?) - (\d+)/)
     if (match) {
-      const nameRaw = match[1].trim()
-      const quantity = parseInt(match[2])
-
-      const product = productsList.find(p =>
-        (p.name || p['Название'])?.toLowerCase().trim() === nameRaw.toLowerCase()
-      )
-
-      const price = product?.price || product?.['Цена'] || 0
-
-      items.push({ name: nameRaw, quantity, price })
+      items.push({ name: match[1], price: parseInt(match[2]), quantity: 1 })
     }
   }
 
-  return items
+  const grouped = {}
+  for (let item of items) {
+    const key = `${item.name}-${item.price}`
+    if (!grouped[key]) grouped[key] = { ...item, quantity: 0 }
+    grouped[key].quantity += 1
+  }
+  return Object.values(grouped)
 }
 
 function getDiscountRules(settings) {
@@ -64,22 +60,19 @@ function getBestDiscount(total, rules) {
 export function AdminPanel() {
   const [orders, setOrders] = useState(null)
   const [discountRules, setDiscountRules] = useState([])
-  const [products, setProducts] = useState([])
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [csvText, settingsRes, productsRes] = await Promise.all([
+        const [csvText, settingsRes] = await Promise.all([
           fetch(CSV_URL).then(res => res.text()),
-          fetch(SETTINGS_URL).then(res => res.json()),
-          fetch(PRODUCTS_URL).then(res => res.json())
+          fetch(SETTINGS_URL).then(res => res.json())
         ])
 
         const parsedOrders = parseCSV(csvText)
         const rules = getDiscountRules(settingsRes)
         setOrders(parsedOrders)
         setDiscountRules(rules)
-        setProducts(productsRes)
       } catch (error) {
         console.error('Ошибка при загрузке данных:', error)
       }
@@ -101,7 +94,7 @@ export function AdminPanel() {
       <h2 className="text-2xl font-bold mb-6">Заказы</h2>
 
       {orders.map((order, i) => {
-        const items = parseItems(order['Заказ'] || '', products)
+        const items = parseItems(order['Заказ'] || '')
         const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
         const matchedRule = getBestDiscount(total, discountRules)
         const discountAmount = Math.round(total * matchedRule.percent / 100)
