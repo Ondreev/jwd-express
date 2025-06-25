@@ -27,9 +27,15 @@ function groupItems(orderString) {
   const grouped = {}
   const entries = orderString.split(',')
   for (let entry of entries) {
-    const [nameRaw, priceRaw] = entry.split('-').map(x => x.trim())
-    const name = nameRaw
+    const parts = entry.split('-')
+    if (parts.length < 2) continue // защита: пропускаем строки без цены
+
+    const nameRaw = parts[0]?.trim()
+    const priceRaw = parts[1]?.trim()
     const price = parseInt(priceRaw.replace(/\D/g, '')) || 0
+    if (!nameRaw) continue
+
+    const name = nameRaw
     grouped[name] = grouped[name] || { name, price, quantity: 0 }
     grouped[name].quantity += 1
   }
@@ -52,6 +58,7 @@ export function AdminPanel() {
     fetch(CSV_URL)
       .then(res => res.text())
       .then(text => setOrders(parseCSV(text)))
+      .catch(console.error)
   }, [])
 
   return (
@@ -59,7 +66,7 @@ export function AdminPanel() {
       <h2 className="text-2xl font-bold mb-4">Заказы</h2>
       <div className="grid gap-6">
         {orders.map((order, i) => {
-          const items = groupItems(order['Заказ'])
+          const items = groupItems(order['Заказ'] || '')
           const { total, discountPercent, discountAmount, final } = calculateTotals(items)
 
           return (
