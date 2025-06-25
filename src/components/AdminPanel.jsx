@@ -18,7 +18,7 @@ function formatPrice(price) {
 function parseItems(orderStr) {
   const items = []
   const cleanedStr = orderStr.replace(/[₽|в‚Ѕ]/g, '₽')
-  const parts = cleanedStr.split(',').map(p => p.trim()).filter(Boolean)
+  const parts = cleanedStr.split(/,(?![^\"]*\")/).map(p => p.trim()).filter(Boolean)
 
   for (let part of parts) {
     const match = part.match(/^(.+?) - (\d+)₽$/)
@@ -49,11 +49,10 @@ function getDiscountRules(settings) {
 }
 
 function getBestDiscount(total, rules) {
-  let result = { percent: 0, min: 0 }
   for (let rule of rules) {
-    if (total >= rule.min) result = rule
+    if (total >= rule.min) return rule
   }
-  return result
+  return { percent: 0, min: 0 }
 }
 
 export function AdminPanel() {
