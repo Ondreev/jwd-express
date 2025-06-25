@@ -52,7 +52,7 @@ function getBestDiscount(total, rules) {
 
 export function AdminPanel() {
   const [orders, setOrders] = useState([])
-  const [settings, setSettings] = useState({})
+  const [settings, setSettings] = useState(null)
 
   useEffect(() => {
     fetch(CSV_URL)
@@ -62,6 +62,15 @@ export function AdminPanel() {
       .then(res => res.json())
       .then(setSettings)
   }, [])
+
+  if (!settings) {
+    return (
+      <div className="min-h-screen bg-gray-700 text-white p-4 max-w-screen-md mx-auto">
+        <h2 className="text-2xl font-bold mb-6">Заказы</h2>
+        <div>Загрузка настроек скидок...</div>
+      </div>
+    )
+  }
 
   const discountRules = getDiscountRules(settings)
 
