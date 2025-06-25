@@ -17,7 +17,7 @@ function formatPrice(price) {
 
 function parseItems(orderStr) {
   const items = []
-  const cleanedStr = orderStr.replace(/[\u20bd|в‚Ѕ]/g, '₽')
+  const cleanedStr = orderStr.replace(/[₽|в‚Ѕ]/g, '₽')
   const parts = cleanedStr.split(',').map(p => p.trim()).filter(Boolean)
 
   for (let part of parts) {
@@ -37,20 +37,23 @@ function parseItems(orderStr) {
 }
 
 function getDiscountRules(settings) {
+  if (!settings || typeof settings !== 'object') return []
   return Object.entries(settings)
     .filter(([k]) => k.startsWith('discount_rule_'))
     .map(([, v]) => {
       const [min, percent] = v.split(':').map(Number)
       return { min, percent }
     })
+    .filter(rule => !isNaN(rule.min) && !isNaN(rule.percent))
     .sort((a, b) => b.min - a.min)
 }
 
 function getBestDiscount(total, rules) {
+  let result = { percent: 0, min: 0 }
   for (let rule of rules) {
-    if (total >= rule.min) return rule
+    if (total >= rule.min) result = rule
   }
-  return { percent: 0, min: 0 }
+  return result
 }
 
 export function AdminPanel() {
@@ -59,14 +62,19 @@ export function AdminPanel() {
 
   useEffect(() => {
     async function loadData() {
-      const [csvText, settingsRes] = await Promise.all([
-        fetch(CSV_URL).then(res => res.text()),
-        fetch(SETTINGS_URL).then(res => res.json())
-      ])
-      const parsedOrders = parseCSV(csvText)
-      const rules = getDiscountRules(settingsRes)
-      setOrders(parsedOrders)
-      setDiscountRules(rules)
+      try {
+        const [csvText, settingsRes] = await Promise.all([
+          fetch(CSV_URL).then(res => res.text()),
+          fetch(SETTINGS_URL).then(res => res.json())
+        ])
+
+        const parsedOrders = parseCSV(csvText)
+        const rules = getDiscountRules(settingsRes)
+        setOrders(parsedOrders)
+        setDiscountRules(rules)
+      } catch (error) {
+        console.error('Ошибка при загрузке данных:', error)
+      }
     }
     loadData()
   }, [])
