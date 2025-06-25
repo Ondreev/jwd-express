@@ -6,7 +6,7 @@ const CSV_URL =
 const SETTINGS_URL =
   'https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec?action=getSettings'
 const ADMIN_PASS_URL =
-  'https://script.google.com/macros/s/AKfycbxCoUAl42L5S4Zvz43kmTi5JDH8PBCB2iNP5H0vdMWm1Bn__q5oDG6A6sKNJwvrYtRkqg/exec'
+  'https://script.google.com/macros/s/AKfycbxCoUAl42L5S4Zvz43kmTi5JDH8PBCB2iNP5H0vdMWm1Bn__q5oDG6A6sKNJwvrYtRkqg/exec?action=getAdminPass'
 
 function parseCSV(text) {
   const { data } = Papa.parse(text.trim(), { header: true, skipEmptyLines: true })
