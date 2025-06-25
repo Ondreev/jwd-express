@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Papa from 'papaparse'
 
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR322Pt499Vfg2H8lFKITDC7GIJiZgkq4tubdCKCZR87zeqRVhRBx8NoGk9RL09slKkOT0sFrJaOelE/pub?gid=1075610539&single=true&output=csv'
 
@@ -12,30 +13,13 @@ function formatPrice(price) {
   return price.toLocaleString('ru-RU') + '₽'
 }
 
-function parseCSV(text) {
-  const [headerLine, ...lines] = text.trim().split('\n')
-  const headers = headerLine.split(',')
-  return lines.reverse().map(line => {
-    const values = line.split(',')
-    const row = {}
-    headers.forEach((key, i) => (row[key.trim()] = values[i]?.trim()))
-    return row
-  })
-}
-
 function groupItems(orderString) {
   const grouped = {}
-  const entries = orderString.split(',')
+  const entries = orderString.split(',').map(e => e.trim()).filter(e => e)
   for (let entry of entries) {
-    const parts = entry.split('-')
-    if (parts.length < 2) continue // защита: пропускаем строки без цены
-
-    const nameRaw = parts[0]?.trim()
-    const priceRaw = parts[1]?.trim()
-    const price = parseInt(priceRaw.replace(/\D/g, '')) || 0
-    if (!nameRaw) continue
-
+    const [nameRaw, priceRaw] = entry.split('-').map(x => x.trim())
     const name = nameRaw
+    const price = parseInt(priceRaw?.replace(/\D/g, '')) || 0
     grouped[name] = grouped[name] || { name, price, quantity: 0 }
     grouped[name].quantity += 1
   }
@@ -57,8 +41,10 @@ export function AdminPanel() {
   useEffect(() => {
     fetch(CSV_URL)
       .then(res => res.text())
-      .then(text => setOrders(parseCSV(text)))
-      .catch(console.error)
+      .then(csvText => {
+        const result = Papa.parse(csvText, { header: true })
+        setOrders(result.data.filter(o => o['Имя'] && o['Заказ']))
+      })
   }, [])
 
   return (
@@ -66,7 +52,7 @@ export function AdminPanel() {
       <h2 className="text-2xl font-bold mb-4">Заказы</h2>
       <div className="grid gap-6">
         {orders.map((order, i) => {
-          const items = groupItems(order['Заказ'] || '')
+          const items = groupItems(order['Заказ'])
           const { total, discountPercent, discountAmount, final } = calculateTotals(items)
 
           return (
