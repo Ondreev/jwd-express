@@ -21,7 +21,7 @@ function parseItems(orderStr) {
 
   for (let part of parts) {
     part = part.replace(/^"|"$/g, '')
-    const match = part.match(/^(.+?) - (\d+)\s?₽$/)
+    const match = part.match(/^(.+?) - (\d+)\s?[₽в‚Ѕ]?$/)
     if (match) {
       items.push({ name: match[1], price: parseInt(match[2]), quantity: 1 })
     }
@@ -51,23 +51,24 @@ function getBestDiscount(total, rules) {
 }
 
 export function AdminPanel() {
-  const [orders, setOrders] = useState([])
+  const [orders, setOrders] = useState(null)
   const [settings, setSettings] = useState(null)
 
   useEffect(() => {
-    fetch(CSV_URL)
-      .then(res => res.text())
-      .then(text => setOrders(parseCSV(text)))
-    fetch(SETTINGS_URL)
-      .then(res => res.json())
-      .then(setSettings)
+    Promise.all([
+      fetch(CSV_URL).then(res => res.text()).then(parseCSV),
+      fetch(SETTINGS_URL).then(res => res.json())
+    ]).then(([parsedOrders, settingsData]) => {
+      setOrders(parsedOrders)
+      setSettings(settingsData)
+    })
   }, [])
 
-  if (!settings) {
+  if (!orders || !settings) {
     return (
       <div className="min-h-screen bg-gray-700 text-white p-4 max-w-screen-md mx-auto">
         <h2 className="text-2xl font-bold mb-6">Заказы</h2>
-        <div>Загрузка настроек скидок...</div>
+        <div>Загрузка заказов и настроек скидок...</div>
       </div>
     )
   }
@@ -81,9 +82,8 @@ export function AdminPanel() {
       {orders.map((order, i) => {
         const items = parseItems(order['Заказ'] || '')
         const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-        const matchedRule = [...discountRules].sort((a, b) => b.min - a.min).find(rule => total >= rule.min)
-        const maxDiscount = matchedRule ? matchedRule.percent : 0
-        const discountAmount = Math.round(total * maxDiscount / 100)
+        const matchedRule = getBestDiscount(total, discountRules)
+        const discountAmount = Math.round(total * matchedRule.percent / 100)
         const finalTotal = total - discountAmount
 
         return (
@@ -111,9 +111,9 @@ export function AdminPanel() {
               <div className="text-gray-500 text-sm italic">Нет товаров</div>
             )}
 
-            {maxDiscount > 0 && (
+            {matchedRule.percent > 0 && (
               <div className="text-yellow-400 font-semibold text-sm mt-2">
-                Скидка {maxDiscount}%: −{formatPrice(discountAmount)}
+                Скидка {matchedRule.percent}%: −{formatPrice(discountAmount)}
               </div>
             )}
 
