@@ -1,9 +1,12 @@
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+
+import { AdminPanel } from './components/AdminPanel'
 import { ProductList } from './components/ProductList'
 import { Cart } from './components/Cart'
 import { CheckoutForm } from './components/CheckoutForm'
 
-function App() {
+function AppMain() {
   const [products, setProducts] = useState([])
   const [cartItems, setCartItems] = useState([])
   const [discountRules, setDiscountRules] = useState([])
@@ -76,9 +79,19 @@ function App() {
       />
 
       <Cart items={cartItems} discountRules={discountRules} />
-
       <CheckoutForm items={cartItems} />
     </div>
+  )
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<AppMain />} />
+        <Route path="/admin" element={<AdminPanel />} />
+      </Routes>
+    </Router>
   )
 }
 
