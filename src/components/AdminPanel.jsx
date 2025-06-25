@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import Papa from 'papaparse'
 
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR322Pt499Vfg2H8lFKITDC7GIJiZgkq4tubdCKCZR87zeqRVhRBx8NoGk9RL09slKkOT0sFrJaOelE/pub?gid=1075610539&single=true&output=csv'
 
@@ -13,15 +12,30 @@ function formatPrice(price) {
   return price.toLocaleString('ru-RU') + '₽'
 }
 
+function parseCSV(text) {
+  const [headerLine, ...lines] = text.trim().split('\n')
+  const headers = headerLine.split(',')
+  return lines.map(line => {
+    const values = line.split(',')
+    const row = {}
+    headers.forEach((key, i) => (row[key.trim()] = values[i]?.trim()))
+    return row
+  }).reverse()
+}
+
 function groupItems(orderString) {
   const grouped = {}
-  const entries = orderString.split(',').map(e => e.trim()).filter(e => e)
+  const entries = orderString.split(',')
   for (let entry of entries) {
     const [nameRaw, priceRaw] = entry.split('-').map(x => x.trim())
     const name = nameRaw
-    const price = parseInt(priceRaw?.replace(/\D/g, '')) || 0
-    grouped[name] = grouped[name] || { name, price, quantity: 0 }
-    grouped[name].quantity += 1
+    const price = parseInt(priceRaw?.replace(/\D/g, '') || '0', 10)
+    if (!name || !price) continue
+    const key = `${name}-${price}`
+    if (!grouped[key]) {
+      grouped[key] = { name, price, quantity: 0 }
+    }
+    grouped[key].quantity += 1
   }
   return Object.values(grouped)
 }
@@ -41,35 +55,39 @@ export function AdminPanel() {
   useEffect(() => {
     fetch(CSV_URL)
       .then(res => res.text())
-      .then(csvText => {
-        const result = Papa.parse(csvText, { header: true })
-        setOrders(result.data.filter(o => o['Имя'] && o['Заказ']))
-      })
+      .then(text => setOrders(parseCSV(text)))
   }, [])
 
   return (
-    <div className="mt-6">
-      <h2 className="text-2xl font-bold mb-4">Заказы</h2>
+    <div className="mt-6 px-4">
+      <h2 className="text-2xl font-bold mb-6 text-white">Заказы</h2>
       <div className="grid gap-6">
         {orders.map((order, i) => {
           const items = groupItems(order['Заказ'])
           const { total, discountPercent, discountAmount, final } = calculateTotals(items)
 
           return (
-            <div key={i} className="fancy-block text-white">
-              <div className="text-sm text-gray-400 mb-2">
-                <div><strong>Имя:</strong> {order['Имя']}</div>
-                <div><strong>WhatsApp:</strong> {order['WhatsApp']}</div>
-                <div><strong>Адрес:</strong> {order['Адрес']}</div>
-                {order['Примечание'] && <div><strong>Примечание:</strong> {order['Примечание']}</div>}
+            <div
+              key={i}
+              className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg border border-gray-700"
+            >
+              <div className="text-sm text-gray-300 mb-4">
+                <div><strong className="text-white">Имя:</strong> {order['Имя']}</div>
+                <div><strong className="text-white">WhatsApp:</strong> {order['WhatsApp']}</div>
+                <div><strong className="text-white">Адрес:</strong> {order['Адрес']}</div>
+                {order['Примечание'] && (
+                  <div><strong className="text-white">Примечание:</strong> {order['Примечание']}</div>
+                )}
               </div>
 
-              {items.map((item, j) => (
-                <div key={j} className="flex justify-between text-sm text-gray-300 border-b border-gray-700 py-1">
-                  <span>{item.name} x{item.quantity}</span>
-                  <span>{formatPrice(item.price * item.quantity)}</span>
-                </div>
-              ))}
+              <div className="mb-2 space-y-1 text-sm text-gray-300">
+                {items.map((item, j) => (
+                  <div key={j} className="flex justify-between border-b border-gray-700 py-1">
+                    <span>{item.name} x{item.quantity}</span>
+                    <span>{formatPrice(item.price * item.quantity)}</span>
+                  </div>
+                ))}
+              </div>
 
               {discountPercent > 0 && (
                 <div className="text-yellow-400 font-bold text-sm mt-2">
