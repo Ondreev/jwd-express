@@ -56,6 +56,7 @@ function getBestDiscount(total, rules) {
 export function AdminPanel() {
   const [orders, setOrders] = useState(null)
   const [settings, setSettings] = useState(null)
+  const [collected, setCollected] = useState({})
 
   useEffect(() => {
     Promise.all([
@@ -85,7 +86,8 @@ export function AdminPanel() {
       {orders.map((order, i) => {
         const items = parseItems(order['Заказ'] || '')
         const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-        const matchedRule = getBestDiscount(total, discountRules)
+        const isCollected = collected[i]
+        const matchedRule = isCollected ? getBestDiscount(total, discountRules) : { percent: 0, min: 0 }
         const discountAmount = Math.round(total * matchedRule.percent / 100)
         const finalTotal = total - discountAmount
 
@@ -114,9 +116,9 @@ export function AdminPanel() {
               <div className="text-gray-500 text-sm italic">Нет товаров</div>
             )}
 
-            {matchedRule.percent > 0 && (
+            {isCollected && matchedRule.percent > 0 && (
               <div className="text-yellow-400 font-semibold text-sm mt-2">
-                Скидка {matchedRule.percent}%: −{formatPrice(discountAmount)}
+                Применена скидка {matchedRule.percent}%: −{formatPrice(discountAmount)}
               </div>
             )}
 
@@ -124,6 +126,15 @@ export function AdminPanel() {
               <span>Итого:</span>
               <span>{formatPrice(finalTotal)}</span>
             </div>
+
+            {!isCollected && (
+              <button
+                onClick={() => setCollected(prev => ({ ...prev, [i]: true }))}
+                className="mt-3 bg-yellow-500 text-black py-2 px-4 rounded-xl font-bold hover:bg-yellow-600 transition"
+              >
+                Собрать
+              </button>
+            )}
           </div>
         )
       })}
