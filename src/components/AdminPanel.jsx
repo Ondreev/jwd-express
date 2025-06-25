@@ -41,7 +41,9 @@ function getDiscountRules(settings) {
   return Object.entries(settings)
     .filter(([k]) => k.startsWith('discount_rule_'))
     .map(([, v]) => {
-      const [min, percent] = v.split(':').map(Number)
+      const [minStr, percentStr] = v.split(':').map(s => s.trim())
+      const min = Number(minStr)
+      const percent = Number(percentStr)
       return { min, percent }
     })
     .filter(rule => !isNaN(rule.min) && !isNaN(rule.percent))
