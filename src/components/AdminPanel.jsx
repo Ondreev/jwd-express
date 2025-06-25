@@ -18,10 +18,10 @@ function formatPrice(price) {
 function parseItems(orderStr) {
   const items = []
   const cleanedStr = orderStr.replace(/[₽|в‚Ѕ]/g, '₽')
-  const parts = cleanedStr.split(/,(?![^\"]*\")/).map(p => p.trim()).filter(Boolean)
+  const parts = cleanedStr.split(/,(?![^"]*")/).map(p => p.trim()).filter(Boolean)
 
   for (let part of parts) {
-    const match = part.match(/^(.+?) - (\d+)₽$/)
+    const match = part.match(/^(.+?) - (\d+)/)
     if (match) {
       items.push({ name: match[1], price: parseInt(match[2]), quantity: 1 })
     }
