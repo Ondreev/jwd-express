@@ -17,11 +17,11 @@ function formatPrice(price) {
 
 function parseItems(orderStr) {
   const items = []
-  const parts = orderStr.split(',').map(p => p.trim()).filter(Boolean)
+  const cleanedStr = orderStr.replace(/\u20bd|в‚Ѕ/g, '₽')
+  const parts = cleanedStr.split(',').map(p => p.trim()).filter(Boolean)
 
   for (let part of parts) {
-    part = part.replace(/^"|"$/g, '')
-    const match = part.match(/^(.+?) - (\d+)\s?[₽в‚Ѕ]?$/)
+    const match = part.match(/^(.+?) - (\d+)₽$/)
     if (match) {
       items.push({ name: match[1], price: parseInt(match[2]), quantity: 1 })
     }
