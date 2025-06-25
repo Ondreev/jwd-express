@@ -7,6 +7,7 @@ function App() {
   const [cart, setCart] = useState([])
   const [showLoginPopup, setShowLoginPopup] = useState(false)
   const [password, setPassword] = useState('')
+  const [isAdmin, setIsAdmin] = useState(false)
 
   const addToCart = (product) => {
     setCart((prev) => {
@@ -43,7 +44,8 @@ function App() {
       )
       const realPass = await res.text()
       if (password === realPass.trim()) {
-        window.location.href = '/admin'
+        setIsAdmin(true)
+        setShowLoginPopup(false)
       } else {
         alert('Неверный пароль')
       }
@@ -75,20 +77,24 @@ function App() {
         </div>
       </header>
 
-      <main className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="md:col-span-2">
-          <ProductList
-            products={productsData}
-            addToCart={addToCart}
-            removeFromCart={removeFromCart}
-            getQuantity={getQuantity}
-            discountRules={[]}
-          />
-        </div>
-        <div>
-          <Cart cart={cart} />
-        </div>
-      </main>
+      {isAdmin ? (
+        window.location.href = '/admin'
+      ) : (
+        <main className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="md:col-span-2">
+            <ProductList
+              products={productsData}
+              addToCart={addToCart}
+              removeFromCart={removeFromCart}
+              getQuantity={getQuantity}
+              discountRules={[]}
+            />
+          </div>
+          <div>
+            <Cart cart={cart} />
+          </div>
+        </main>
+      )}
 
       {showLoginPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
