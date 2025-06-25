@@ -6,7 +6,7 @@ const CSV_URL =
 const SETTINGS_URL =
   'https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec?action=getSettings'
 const ADMIN_PASS_URL =
-  'https://script.google.com/macros/s/AKfycbybK3Vobo8b5sb8Lo4fgHs9atBxBeaan40O42W0ZfHWVAcI3w2mJjPDtY9A5AaSi-wl7A/exec?action=getAdminPass'
+  'https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec?action=getAdminPass'
 
 function parseCSV(text) {
   const { data } = Papa.parse(text.trim(), { header: true, skipEmptyLines: true })
@@ -164,9 +164,13 @@ export function AdminPanel() {
               <div className="text-gray-500 text-sm italic">Нет товаров</div>
             )}
 
-            {matchedRule.percent > 0 && (
+            {matchedRule.percent > 0 ? (
               <div className="text-yellow-400 font-semibold text-sm mt-2">
                 Применена скидка {matchedRule.percent}%: {formatPrice(discountAmount)}
+              </div>
+            ) : (
+              <div className="text-yellow-400 font-semibold text-sm mt-2">
+                Не забудь применить скидку на объем!
               </div>
             )}
 
