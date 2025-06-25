@@ -21,3 +21,4 @@ export default defineConfig({
     historyApiFallback: true // опция актуальна, если запускаешь локально
   }
 })
+
