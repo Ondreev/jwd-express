@@ -24,11 +24,16 @@ function parseItems(orderStr, productsList = []) {
   for (let part of parts) {
     const match = part.match(/^(.+?) x(\d+)$/)
     if (match) {
-      const name = match[1].trim()
+      const nameRaw = match[1].trim()
       const quantity = parseInt(match[2])
-      const product = productsList.find(p => p.name === name)
-      const price = product ? product.price : 0
-      items.push({ name, quantity, price })
+
+      const product = productsList.find(p =>
+        (p.name || p['Название'])?.toLowerCase().trim() === nameRaw.toLowerCase()
+      )
+
+      const price = product?.price || product?.['Цена'] || 0
+
+      items.push({ name: nameRaw, quantity, price })
     }
   }
 
