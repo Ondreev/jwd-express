@@ -5,6 +5,8 @@ const CSV_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vR322Pt499Vfg2H8lFKITDC7GIJiZgkq4tubdCKCZR87zeqRVhRBx8NoGk9RL09slKkOT0sFrJaOelE/pub?gid=1075610539&single=true&output=csv'
 const SETTINGS_URL =
   'https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec?action=getSettings'
+const ADMIN_PASS_URL =
+  'https://script.google.com/macros/s/AKfycbybK3Vobo8b5sb8Lo4fgHs9atBxBeaan40O42W0ZfHWVAcI3w2mJjPDtY9A5AaSi-wl7A/exec?action=getAdminPass'
 
 function parseCSV(text) {
   const { data } = Papa.parse(text.trim(), { header: true, skipEmptyLines: true })
@@ -61,8 +63,12 @@ function getBestDiscount(total, rules) {
 export function AdminPanel() {
   const [orders, setOrders] = useState(null)
   const [discountRules, setDiscountRules] = useState([])
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [password, setPassword] = useState('')
 
   useEffect(() => {
+    if (!isLoggedIn) return
+
     async function loadData() {
       try {
         const [csvText, settingsRes] = await Promise.all([
@@ -79,7 +85,39 @@ export function AdminPanel() {
       }
     }
     loadData()
-  }, [])
+  }, [isLoggedIn])
+
+  const handleLogin = async () => {
+    try {
+      const res = await fetch(ADMIN_PASS_URL)
+      const realPass = await res.text()
+      if (password === realPass.trim()) {
+        setIsLoggedIn(true)
+      } else {
+        alert('Неверный пароль')
+      }
+    } catch (err) {
+      console.error('Ошибка авторизации:', err)
+    }
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-gray-700 text-white p-4 max-w-screen-md mx-auto">
+        <h2 className="text-2xl font-bold mb-4">Вход в админ-панель</h2>
+        <input
+          type="password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          placeholder="Введите пароль"
+          className="p-2 rounded text-black mr-2"
+        />
+        <button onClick={handleLogin} className="bg-yellow-500 text-black px-4 py-2 rounded">
+          Войти
+        </button>
+      </div>
+    )
+  }
 
   if (!orders) {
     return (
@@ -126,9 +164,11 @@ export function AdminPanel() {
               <div className="text-gray-500 text-sm italic">Нет товаров</div>
             )}
 
-            <div className="text-yellow-400 font-semibold text-sm mt-2">
-              Не забудь применить скидку на объем!
-            </div>
+            {matchedRule.percent > 0 && (
+              <div className="text-yellow-400 font-semibold text-sm mt-2">
+                Применена скидка {matchedRule.percent}%: {formatPrice(discountAmount)}
+              </div>
+            )}
 
             <div className="flex justify-between font-bold text-lg mt-2 border-t border-gray-600 pt-2">
               <span>Итого:</span>
