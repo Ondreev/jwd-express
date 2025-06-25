@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Papa from 'papaparse'
 
 const CSV_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vR322Pt499Vfg2H8lFKITDC7GIJiZgkq4tubdCKCZR87zeqRVhRBx8NoGk9RL09slKkOT0sFrJaOelE/pub?gid=1075610539&single=true&output=csv'
@@ -6,14 +7,8 @@ const SETTINGS_URL =
   'https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec?action=getSettings'
 
 function parseCSV(text) {
-  const [headerLine, ...lines] = text.trim().split('\n')
-  const headers = headerLine.split(',').map(h => h.trim())
-  return lines.map(line => {
-    const values = line.split(',').map(v => v.trim())
-    const row = {}
-    headers.forEach((key, i) => (row[key] = values[i] || ''))
-    return row
-  }).reverse()
+  const { data } = Papa.parse(text.trim(), { header: true, skipEmptyLines: true })
+  return data.reverse()
 }
 
 function formatPrice(price) {
@@ -22,10 +17,10 @@ function formatPrice(price) {
 
 function parseItems(orderStr) {
   const items = []
-  const parts = orderStr.split(', ').map(p => p.trim())
+  const parts = orderStr.split(',').map(p => p.trim()).filter(Boolean)
 
   for (let part of parts) {
-    part = part.replace(/^"|"$/g, '') // убираем кавычки по краям
+    part = part.replace(/^"|"$/g, '')
     const match = part.match(/^(.+?) - (\d+)\s?₽$/)
     if (match) {
       items.push({ name: match[1], price: parseInt(match[2]), quantity: 1 })
