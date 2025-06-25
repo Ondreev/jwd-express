@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 
 const CSV_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vR322Pt499Vfg2H8lFKITDC7GIJiZgkq4tubdCKCZR87zeqRVhRBx8NoGk9RL09slKkOT0sFrJaOelE/pub?gid=1075610539&single=true&output=csv'
+const SETTINGS_URL =
+  'https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec?action=getSettings'
 
 function parseCSV(text) {
   const [headerLine, ...lines] = text.trim().split('\n')
@@ -27,43 +29,56 @@ function parseItems(orderStr) {
       items.push({ name: match[1], price: parseInt(match[2]), quantity: 1 })
     }
   }
-
-  // группировка по имени и цене
   const grouped = {}
   for (let item of items) {
     const key = `${item.name}-${item.price}`
     if (!grouped[key]) grouped[key] = { ...item, quantity: 0 }
     grouped[key].quantity += 1
   }
-
   return Object.values(grouped)
 }
 
-function calculateDiscount(total) {
-  if (total >= 3000) return 15
-  if (total >= 2000) return 10
-  if (total >= 1000) return 5
-  return 0
+function getDiscountRules(settings) {
+  return Object.entries(settings)
+    .filter(([k]) => k.startsWith('discount_rule_'))
+    .map(([, v]) => {
+      const [threshold, percent] = v.split(':').map(Number)
+      return { threshold, percent }
+    })
+    .sort((a, b) => b.threshold - a.threshold)
+}
+
+function getBestDiscount(total, rules) {
+  for (let rule of rules) {
+    if (total >= rule.threshold) return rule
+  }
+  return { percent: 0, threshold: 0 }
 }
 
 export function AdminPanel() {
   const [orders, setOrders] = useState([])
+  const [settings, setSettings] = useState({})
 
   useEffect(() => {
     fetch(CSV_URL)
       .then(res => res.text())
       .then(text => setOrders(parseCSV(text)))
+    fetch(SETTINGS_URL)
+      .then(res => res.json())
+      .then(setSettings)
   }, [])
 
+  const discountRules = getDiscountRules(settings)
+
   return (
-    <div className="max-w-md mx-auto px-4 py-6">
-      <h2 className="text-2xl font-bold text-white mb-6">Заказы</h2>
+    <div className="min-h-screen bg-gray-700 text-white p-4 max-w-screen-md mx-auto">
+      <h2 className="text-2xl font-bold mb-6">Заказы</h2>
 
       {orders.map((order, i) => {
         const items = parseItems(order['Заказ'] || '')
         const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-        const discountPercent = calculateDiscount(total)
-        const discountAmount = Math.round((total * discountPercent) / 100)
+        const { percent, threshold } = getBestDiscount(total, discountRules)
+        const discountAmount = Math.round((total * percent) / 100)
         const finalTotal = total - discountAmount
 
         return (
@@ -91,9 +106,9 @@ export function AdminPanel() {
               <div className="text-gray-500 text-sm italic">Нет товаров</div>
             )}
 
-            {discountPercent > 0 && (
+            {percent > 0 && (
               <div className="text-yellow-400 font-semibold text-sm mt-2">
-                Скидка {discountPercent}%: {formatPrice(discountAmount)}
+                Скидка {percent}%: −{formatPrice(discountAmount)}
               </div>
             )}
 
