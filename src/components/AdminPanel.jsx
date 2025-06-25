@@ -47,7 +47,10 @@ function getDiscountRules(settings) {
 }
 
 function getBestDiscount(total, rules) {
-  return [...rules].sort((a, b) => b.min - a.min).find(rule => total >= rule.min) || { percent: 0, min: 0 }
+  for (let rule of rules) {
+    if (total >= rule.min) return rule
+  }
+  return { percent: 0, min: 0 }
 }
 
 export function AdminPanel() {
