@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ProductList } from './components/ProductList'
 import { Cart } from './components/Cart'
 import productsData from './data/products.json'
@@ -8,6 +8,12 @@ function App() {
   const [showLoginPopup, setShowLoginPopup] = useState(false)
   const [password, setPassword] = useState('')
   const [isAdmin, setIsAdmin] = useState(false)
+
+  useEffect(() => {
+    if (isAdmin) {
+      window.location.href = '/admin'
+    }
+  }, [isAdmin])
 
   const addToCart = (product) => {
     setCart((prev) => {
@@ -77,24 +83,20 @@ function App() {
         </div>
       </header>
 
-      {isAdmin ? (
-        window.location.href = '/admin'
-      ) : (
-        <main className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="md:col-span-2">
-            <ProductList
-              products={productsData}
-              addToCart={addToCart}
-              removeFromCart={removeFromCart}
-              getQuantity={getQuantity}
-              discountRules={[]}
-            />
-          </div>
-          <div>
-            <Cart cart={cart} />
-          </div>
-        </main>
-      )}
+      <main className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="md:col-span-2">
+          <ProductList
+            products={productsData}
+            addToCart={addToCart}
+            removeFromCart={removeFromCart}
+            getQuantity={getQuantity}
+            discountRules={[]}
+          />
+        </div>
+        <div>
+          <Cart cart={cart} />
+        </div>
+      </main>
 
       {showLoginPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -129,4 +131,3 @@ function App() {
 }
 
 export default App
-
