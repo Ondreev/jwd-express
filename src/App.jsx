@@ -11,7 +11,7 @@ function App() {
 
   // Загрузка товаров из Google Таблицы
   useEffect(() => {
-    fetch('https://script.google.com/macros/s/AKfycbxYvYdTQsqr43x4-c6EbkNTj8YjUGroWwVkyFQyDJUBKREaRXkISW9FNF_ziv14-uDg4A/exec?action=getProducts')
+    fetch('https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getProducts')
       .then(res => res.json())
       .then(data => {
         console.log('📦 Товары из таблицы:', data)
@@ -65,7 +65,7 @@ function App() {
   const handleLogin = async () => {
     try {
       const res = await fetch(
-        'https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec?action=getAdminPass'
+        'https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getAdminPass'
       )
       const realPass = await res.text()
       if (password === realPass.trim()) {
