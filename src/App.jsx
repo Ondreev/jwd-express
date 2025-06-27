@@ -6,47 +6,21 @@ import { CheckoutForm } from './components/CheckoutForm'
 function App() {
   const [cart, setCart] = useState([])
   const [products, setProducts] = useState([])
-  const [discountRules, setDiscountRules] = useState([])
   const [showLoginPopup, setShowLoginPopup] = useState(false)
   const [password, setPassword] = useState('')
   const [isAdmin, setIsAdmin] = useState(false)
 
-  // Загружаем товары и скидки
   useEffect(() => {
     fetch('https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getProducts')
       .then(res => res.json())
       .then(data => {
-        if (Array.isArray(data)) {
-          setProducts(data)
-        } else {
-          console.error('❌ ОШИБКА: ожидался массив, а пришло:', data)
-        }
-      })
-      .catch(err => {
-        console.error('❌ Ошибка при загрузке продуктов:', err)
-      })
-
-    fetch('https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getSettings')
-      .then(res => res.json())
-      .then(data => {
-        const rules = Object.entries(data)
-          .filter(([key]) => key.startsWith('discount_'))
-          .map(([key, value]) => ({
-            min: parseInt(key.split('_')[1]),
-            percent: parseInt(value)
-          }))
-        setDiscountRules(rules)
-      })
-      .catch(err => {
-        console.error('❌ Ошибка при загрузке настроек:', err)
+        if (Array.isArray(data)) setProducts(data)
+        else setProducts([])
       })
   }, [])
 
-  // Перенаправление в админку
   useEffect(() => {
-    if (isAdmin) {
-      window.location.href = '/admin'
-    }
+    if (isAdmin) window.location.href = '/admin'
   }, [isAdmin])
 
   const addToCart = (product) => {
@@ -91,7 +65,6 @@ function App() {
       }
     } catch (err) {
       alert('Ошибка авторизации')
-      console.error(err)
     }
   }
 
@@ -120,25 +93,15 @@ function App() {
       <main className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2">
           <ProductList
-  products={products.map(product => {
-    const price = parseFloat(product.price) || 0
-    const matchedRule = [...discountRules].sort((a, b) => b.min - a.min).find(rule => price >= rule.min)
-    const discount = matchedRule?.percent || 0
-    const discountedPrice = discount ? Math.round(price * (1 - discount / 100)) : price
-
-    return {
-      ...product,
-      originalPrice: price,
-      discountedPrice
-    }
-  })}
-  addToCart={addToCart}
-  removeFromCart={removeFromCart}
-  getQuantity={getQuantity}
-/>
+            products={products}
+            addToCart={addToCart}
+            removeFromCart={removeFromCart}
+            getQuantity={getQuantity}
+            discountRules={[]} // позже подключим
+          />
         </div>
         <div>
-          <Cart items={cart} discountRules={discountRules} />
+          <Cart cart={cart} />
           <CheckoutForm items={cart} />
         </div>
       </main>
