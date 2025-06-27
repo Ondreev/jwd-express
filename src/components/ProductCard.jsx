@@ -2,7 +2,6 @@ import { useState } from 'react'
 
 export function ProductCard({ product, addToCart, removeFromCart, getQuantity }) {
   const {
-    id,
     name,
     image,
     description,
@@ -16,18 +15,15 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
     : originalPrice
 
   const hasDiscount = discountedPrice < originalPrice
-  const quantity = getQuantity(name) // заменено id на name
+  const quantity = getQuantity(name)
 
   const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽'
 
   const handleAdd = () => {
     addToCart({
-      name,
-      image,
-      description,
-      promo,
-      originalPrice,
-      price: discountedPrice
+      ...product,
+      price: discountedPrice,
+      originalPrice
     })
   }
 
