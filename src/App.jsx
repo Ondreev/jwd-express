@@ -11,7 +11,7 @@ function App() {
 
   // Загрузка товаров из Google Таблицы
   useEffect(() => {
-    fetch('https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec?action=getProducts')
+    fetch('https://script.google.com/macros/s/AKfycbxYvYdTQsqr43x4-c6EbkNTj8YjUGroWwVkyFQyDJUBKREaRXkISW9FNF_ziv14-uDg4A/exec?action=getProducts')
       .then(res => res.json())
       .then(data => {
         console.log('📦 Товары из таблицы:', data)
