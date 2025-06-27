@@ -21,6 +21,22 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
 
   const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽'
 
+  const handleAdd = () => {
+    addToCart({
+      id,
+      name,
+      image,
+      description,
+      promo,
+      originalPrice,
+      price: discountedPrice
+    })
+  }
+
+  const handleRemove = () => {
+    removeFromCart(id)
+  }
+
   return (
     <div className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 relative">
       <div className="relative">
@@ -55,7 +71,7 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
 
       {quantity === 0 ? (
         <button
-          onClick={() => addToCart({ ...product, price: discountedPrice })}
+          onClick={handleAdd}
           className="w-full bg-yellow-500 text-black py-2 rounded-xl hover:bg-yellow-600 transition duration-200 font-bold"
         >
           В корзину
@@ -63,14 +79,14 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
       ) : (
         <div className="flex items-center justify-between gap-2">
           <button
-            onClick={() => removeFromCart(id)}
+            onClick={handleRemove}
             className="bg-yellow-300 text-black w-8 h-8 rounded-full font-bold text-xl hover:bg-yellow-400"
           >
             −
           </button>
           <span className="font-semibold text-lg text-white">{quantity}</span>
           <button
-            onClick={() => addToCart({ ...product, price: discountedPrice })}
+            onClick={handleAdd}
             className="bg-yellow-500 text-black w-8 h-8 rounded-full font-bold text-xl hover:bg-yellow-600"
           >
             +
