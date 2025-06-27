@@ -52,11 +52,11 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
 
       {quantity === 0 ? (
         <button
-  onClick={() => addToCart(product)}
-  className="w-full bg-yellow-500 text-black py-2 rounded-xl hover:bg-yellow-600 transition duration-200 font-bold"
->
-  В корзину
-</button>
+          onClick={() => addToCart({ ...product, id: String(id), price: discountedPrice, originalPrice })}
+          className="w-full bg-yellow-500 text-black py-2 rounded-xl hover:bg-yellow-600 transition duration-200 font-bold"
+        >
+          В корзину
+        </button>
       ) : (
         <div className="flex items-center justify-between gap-2">
           <button
@@ -67,11 +67,11 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
           </button>
           <span className="font-semibold text-lg text-white">{quantity}</span>
           <button
-  onClick={() => addToCart(product)}
-  className="bg-yellow-500 text-black w-8 h-8 rounded-full font-bold text-xl hover:bg-yellow-600"
->
-  +
-</button>
+            onClick={() => addToCart({ ...product, id: String(id), price: discountedPrice, originalPrice })}
+            className="bg-yellow-500 text-black w-8 h-8 rounded-full font-bold text-xl hover:bg-yellow-600"
+          >
+            +
+          </button>
         </div>
       )}
     </div>
