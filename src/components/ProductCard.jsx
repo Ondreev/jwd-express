@@ -1,6 +1,7 @@
+import { useState } from 'react'
+
 export function ProductCard({ product, addToCart, removeFromCart, getQuantity }) {
   const {
-    id,
     name,
     image,
     description,
@@ -14,7 +15,7 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
     : originalPrice
 
   const hasDiscount = discountedPrice < originalPrice
-  const quantity = getQuantity(String(id))
+  const quantity = getQuantity(name)
 
   const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽'
 
@@ -52,7 +53,7 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
 
       {quantity === 0 ? (
         <button
-          onClick={() => addToCart({ ...product, id: String(id), price: discountedPrice, originalPrice })}
+          onClick={() => addToCart({ ...product, price: discountedPrice, originalPrice })}
           className="w-full bg-yellow-500 text-black py-2 rounded-xl hover:bg-yellow-600 transition duration-200 font-bold"
         >
           В корзину
@@ -60,14 +61,14 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
       ) : (
         <div className="flex items-center justify-between gap-2">
           <button
-            onClick={() => removeFromCart(String(id))}
+            onClick={() => removeFromCart(name)}
             className="bg-yellow-300 text-black w-8 h-8 rounded-full font-bold text-xl hover:bg-yellow-400"
           >
             −
           </button>
           <span className="font-semibold text-lg text-white">{quantity}</span>
           <button
-            onClick={() => addToCart({ ...product, id: String(id), price: discountedPrice, originalPrice })}
+            onClick={() => addToCart({ ...product, price: discountedPrice, originalPrice })}
             className="bg-yellow-500 text-black w-8 h-8 rounded-full font-bold text-xl hover:bg-yellow-600"
           >
             +
