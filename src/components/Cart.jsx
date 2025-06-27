@@ -1,3 +1,6 @@
+// Cart.jsx
+import React from 'react'
+
 export function Cart({ cart = [], discountRules = [] }) {
   if (cart.length === 0) return null
 
