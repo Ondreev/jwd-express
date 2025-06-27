@@ -1,5 +1,3 @@
-// Шаг 1: добавим логику отправки заказа в CheckoutForm.jsx
-
 import { useState } from 'react'
 
 export function CheckoutForm({ items }) {
@@ -16,57 +14,47 @@ export function CheckoutForm({ items }) {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  const usePostMode = true // ← в будущем можно переключать
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
 
-const handleSubmit = async (e) => {
-  e.preventDefault()
-  setLoading(true)
+    const orderText = items
+      .map(({ name, price, quantity }) => `${name} x${quantity} — ${price * quantity}₽`)
+      .join('\n')
 
-  const orderText = items
-    .map(({ name, price, quantity }) => `${name} x${quantity} — ${price * quantity}₽`)
-    .join('\n')
-
-  try {
-    if (usePostMode) {
+    try {
       const res = await fetch('https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
           name: formData.name,
           whatsapp: formData.phone,
           address: formData.address,
           note: formData.note,
           order: orderText
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        })
       })
-      const data = await res.json()
-      if (data.status === 'ok') setSuccess(true)
-    } else {
-      const query = new URLSearchParams({
-        action: 'addOrder',
-        name: formData.name,
-        whatsapp: formData.phone,
-        address: formData.address,
-        note: formData.note,
-        order: items.map(({ name, price }) => `${name} - ${price}₽`).join(', ')
-      }).toString()
 
-      const res = await fetch(`https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec?${query}`)
       const data = await res.json()
       if (data.status === 'ok') setSuccess(true)
+    } catch (err) {
+      console.error('Ошибка при отправке:', err)
+    } finally {
+      setLoading(false)
     }
-  } catch (err) {
-    console.error('Ошибка при отправке:', err)
-  } finally {
-    setLoading(false)
   }
-}
 
   if (items.length === 0) return null
 
-  if (success) return <div className="fancy-block mt-6 text-green-400 font-bold">Заказ успешно отправлен!</div>
+  if (success) {
+    return (
+      <div className="fancy-block mt-6 text-green-400 font-bold">
+        Заказ успешно отправлен!
+      </div>
+    )
+  }
 
   return (
     <form onSubmit={handleSubmit} className="fancy-block mt-6 text-white">
