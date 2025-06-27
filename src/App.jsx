@@ -120,12 +120,22 @@ function App() {
       <main className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2">
           <ProductList
-            products={products}
-            addToCart={addToCart}
-            removeFromCart={removeFromCart}
-            getQuantity={getQuantity}
-            discountRules={discountRules}
-          />
+  products={products.map(product => {
+    const price = parseFloat(product.price) || 0
+    const matchedRule = [...discountRules].sort((a, b) => b.min - a.min).find(rule => price >= rule.min)
+    const discount = matchedRule?.percent || 0
+    const discountedPrice = discount ? Math.round(price * (1 - discount / 100)) : price
+
+    return {
+      ...product,
+      originalPrice: price,
+      discountedPrice
+    }
+  })}
+  addToCart={addToCart}
+  removeFromCart={removeFromCart}
+  getQuantity={getQuantity}
+/>
         </div>
         <div>
           <Cart items={cart} discountRules={discountRules} />
