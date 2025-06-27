@@ -5,7 +5,7 @@ export function Login({ onLogin }) {
   const [input, setInput] = useState('')
 
   const handleLogin = async () => {
-    const url = 'https://script.google.com/macros/s/AKfycbxCoUAl42L5S4Zvz43kmTi5JDH8PBCB2iNP5H0vdMWm1Bn__q5oDG6A6sKNJwvrYtRkqg/exec?action=getAdminPass'
+    const url = 'https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getAdminPass'
     const res = await fetch(url)
     const realPass = await res.text()
     if (input === realPass) {
