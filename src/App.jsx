@@ -17,7 +17,6 @@ function App() {
         if (Array.isArray(data)) {
           const cleaned = data.map(p => ({
             ...p,
-            id: String(p.id),
             price: Number(p.price),
             originalPrice: Number(p.price),
             promo: p.promo === true || p.promo === 'TRUE'
@@ -35,12 +34,10 @@ function App() {
 
   const addToCart = (product) => {
     setCart((prev) => {
-      const existing = prev.find((p) => String(p.id) === String(product.id))
+      const existing = prev.find((p) => p.name === product.name)
       if (existing) {
         return prev.map((p) =>
-          String(p.id) === String(product.id)
-            ? { ...p, quantity: p.quantity + 1 }
-            : p
+          p.name === product.name ? { ...p, quantity: p.quantity + 1 } : p
         )
       } else {
         return [...prev, { ...product, quantity: 1 }]
@@ -48,20 +45,18 @@ function App() {
     })
   }
 
-  const removeFromCart = (id) => {
+  const removeFromCart = (name) => {
     setCart((prev) =>
       prev
         .map((p) =>
-          String(p.id) === String(id)
-            ? { ...p, quantity: p.quantity - 1 }
-            : p
+          p.name === name ? { ...p, quantity: p.quantity - 1 } : p
         )
         .filter((p) => p.quantity > 0)
     )
   }
 
-  const getQuantity = (id) => {
-    const item = cart.find((p) => String(p.id) === String(id))
+  const getQuantity = (name) => {
+    const item = cart.find((p) => p.name === name)
     return item ? item.quantity : 0
   }
 
