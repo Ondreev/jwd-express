@@ -1,14 +1,23 @@
 import { useState, useEffect } from 'react'
 import { ProductList } from './components/ProductList'
 import { Cart } from './components/Cart'
-import productsData from './data/products.json'
 
 function App() {
   const [cart, setCart] = useState([])
+  const [products, setProducts] = useState([])
   const [showLoginPopup, setShowLoginPopup] = useState(false)
   const [password, setPassword] = useState('')
   const [isAdmin, setIsAdmin] = useState(false)
 
+  // Загрузка товаров из Google Таблицы
+  useEffect(() => {
+    fetch('https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec?action=getProducts')
+      .then(res => res.json())
+      .then(setProducts)
+      .catch(err => console.error('Ошибка загрузки товаров:', err))
+  }, [])
+
+  // Перенаправление в админку
   useEffect(() => {
     if (isAdmin) {
       window.location.href = '/admin'
@@ -29,13 +38,13 @@ function App() {
   }
 
   const removeFromCart = (id) => {
-    setCart((prev) => {
-      return prev
+    setCart((prev) =>
+      prev
         .map((p) =>
           p.id === id ? { ...p, quantity: p.quantity - 1 } : p
         )
         .filter((p) => p.quantity > 0)
-    })
+    )
   }
 
   const getQuantity = (id) => {
@@ -86,7 +95,7 @@ function App() {
       <main className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2">
           <ProductList
-            products={productsData}
+            products={products}
             addToCart={addToCart}
             removeFromCart={removeFromCart}
             getQuantity={getQuantity}
@@ -131,4 +140,3 @@ function App() {
 }
 
 export default App
-
