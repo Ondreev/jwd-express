@@ -7,7 +7,6 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
     image,
     description,
     promo,
-    price,
     originalPrice
   } = product
 
@@ -17,13 +16,12 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
     : originalPrice
 
   const hasDiscount = discountedPrice < originalPrice
-  const quantity = getQuantity(id)
+  const quantity = getQuantity(name) // заменено id на name
 
   const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽'
 
   const handleAdd = () => {
     addToCart({
-      id,
       name,
       image,
       description,
@@ -34,7 +32,7 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
   }
 
   const handleRemove = () => {
-    removeFromCart(id)
+    removeFromCart(name)
   }
 
   return (
