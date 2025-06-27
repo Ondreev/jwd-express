@@ -11,23 +11,23 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
-  fetch('https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getProducts')
-    .then(res => res.json())
-    .then(data => {
-      if (Array.isArray(data)) {
-        const cleaned = data.map(p => ({
-          ...p,
-          id: Number(p.id),
-          price: Number(p.price),
-          originalPrice: Number(p.price),
-          promo: p.promo === true || p.promo === 'TRUE'
-        }))
-        setProducts(cleaned)
-      } else {
-        setProducts([])
-      }
-    })
-}, [])
+    fetch('https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getProducts')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const cleaned = data.map(p => ({
+            ...p,
+            id: String(p.id),
+            price: Number(p.price),
+            originalPrice: Number(p.price),
+            promo: p.promo === true || p.promo === 'TRUE'
+          }))
+          setProducts(cleaned)
+        } else {
+          setProducts([])
+        }
+      })
+  }, [])
 
   useEffect(() => {
     if (isAdmin) window.location.href = '/admin'
@@ -35,10 +35,12 @@ function App() {
 
   const addToCart = (product) => {
     setCart((prev) => {
-      const existing = prev.find((p) => p.id === product.id)
+      const existing = prev.find((p) => String(p.id) === String(product.id))
       if (existing) {
         return prev.map((p) =>
-          p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
+          String(p.id) === String(product.id)
+            ? { ...p, quantity: p.quantity + 1 }
+            : p
         )
       } else {
         return [...prev, { ...product, quantity: 1 }]
@@ -50,14 +52,16 @@ function App() {
     setCart((prev) =>
       prev
         .map((p) =>
-          p.id === id ? { ...p, quantity: p.quantity - 1 } : p
+          String(p.id) === String(id)
+            ? { ...p, quantity: p.quantity - 1 }
+            : p
         )
         .filter((p) => p.quantity > 0)
     )
   }
 
   const getQuantity = (id) => {
-    const item = cart.find((p) => p.id === id)
+    const item = cart.find((p) => String(p.id) === String(id))
     return item ? item.quantity : 0
   }
 
