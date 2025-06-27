@@ -13,8 +13,18 @@ function App() {
   useEffect(() => {
     fetch('https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec?action=getProducts')
       .then(res => res.json())
-      .then(setProducts)
-      .catch(err => console.error('Ошибка загрузки товаров:', err))
+      .then(data => {
+        console.log('📦 Товары из таблицы:', data)
+        if (Array.isArray(data)) {
+          setProducts(data)
+        } else {
+          console.error('❌ ОШИБКА: ожидался массив, а пришло:', data)
+          setProducts([])
+        }
+      })
+      .catch(err => {
+        console.error('❌ Ошибка при загрузке продуктов:', err)
+      })
   }, [])
 
   // Перенаправление в админку
