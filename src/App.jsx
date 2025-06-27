@@ -11,13 +11,23 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
-    fetch('https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getProducts')
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) setProducts(data)
-        else setProducts([])
-      })
-  }, [])
+  fetch('https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getProducts')
+    .then(res => res.json())
+    .then(data => {
+      if (Array.isArray(data)) {
+        const cleaned = data.map(p => ({
+          ...p,
+          id: Number(p.id),
+          price: Number(p.price),
+          originalPrice: Number(p.price),
+          promo: p.promo === true || p.promo === 'TRUE'
+        }))
+        setProducts(cleaned)
+      } else {
+        setProducts([])
+      }
+    })
+}, [])
 
   useEffect(() => {
     if (isAdmin) window.location.href = '/admin'
