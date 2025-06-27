@@ -1,29 +1,44 @@
 import { useState, useEffect } from 'react'
 import { ProductList } from './components/ProductList'
 import { Cart } from './components/Cart'
+import { CheckoutForm } from './components/CheckoutForm'
 
 function App() {
   const [cart, setCart] = useState([])
   const [products, setProducts] = useState([])
+  const [discountRules, setDiscountRules] = useState([])
   const [showLoginPopup, setShowLoginPopup] = useState(false)
   const [password, setPassword] = useState('')
   const [isAdmin, setIsAdmin] = useState(false)
 
-  // Загрузка товаров из Google Таблицы
+  // Загружаем товары и скидки
   useEffect(() => {
     fetch('https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getProducts')
       .then(res => res.json())
       .then(data => {
-        console.log('📦 Товары из таблицы:', data)
         if (Array.isArray(data)) {
           setProducts(data)
         } else {
           console.error('❌ ОШИБКА: ожидался массив, а пришло:', data)
-          setProducts([])
         }
       })
       .catch(err => {
         console.error('❌ Ошибка при загрузке продуктов:', err)
+      })
+
+    fetch('https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getSettings')
+      .then(res => res.json())
+      .then(data => {
+        const rules = Object.entries(data)
+          .filter(([key]) => key.startsWith('discount_'))
+          .map(([key, value]) => ({
+            min: parseInt(key.split('_')[1]),
+            percent: parseInt(value)
+          }))
+        setDiscountRules(rules)
+      })
+      .catch(err => {
+        console.error('❌ Ошибка при загрузке настроек:', err)
       })
   }, [])
 
@@ -109,11 +124,12 @@ function App() {
             addToCart={addToCart}
             removeFromCart={removeFromCart}
             getQuantity={getQuantity}
-            discountRules={[]}
+            discountRules={discountRules}
           />
         </div>
         <div>
-          <Cart cart={cart} />
+          <Cart items={cart} discountRules={discountRules} />
+          <CheckoutForm items={cart} />
         </div>
       </main>
 
