@@ -2,18 +2,20 @@ import { useState } from 'react'
 
 export function ProductCard({ product, addToCart, removeFromCart, getQuantity }) {
   const {
-    id,
     name,
     image,
     description,
     promo,
-    discountedPrice,
     originalPrice
   } = product
 
   const hasPromo = promo === true || promo === 'TRUE'
+  const discountedPrice = hasPromo
+    ? Math.round(originalPrice * 0.8)
+    : originalPrice
+
   const hasDiscount = discountedPrice < originalPrice
-  const quantity = getQuantity(id)
+  const quantity = getQuantity(name)
 
   const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽'
 
@@ -59,7 +61,7 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
       ) : (
         <div className="flex items-center justify-between gap-2">
           <button
-            onClick={() => removeFromCart(id)}
+            onClick={() => removeFromCart(name)}
             className="bg-yellow-300 text-black w-8 h-8 rounded-full font-bold text-xl hover:bg-yellow-400"
           >
             −
