@@ -4,9 +4,9 @@ import Papa from 'papaparse'
 const CSV_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vR322Pt499Vfg2H8lFKITDC7GIJiZgkq4tubdCKCZR87zeqRVhRBx8NoGk9RL09slKkOT0sFrJaOelE/pub?gid=1075610539&single=true&output=csv'
 const SETTINGS_URL =
-  'https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec?action=getSettings'
+  'https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getSettings'
 const ADMIN_PASS_URL =
-  'https://script.google.com/macros/s/AKfycbxCoUAl42L5S4Zvz43kmTi5JDH8PBCB2iNP5H0vdMWm1Bn__q5oDG6A6sKNJwvrYtRkqg/exec?action=getAdminPass'
+  'https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getAdminPass'
 
 function parseCSV(text) {
   const { data } = Papa.parse(text.trim(), { header: true, skipEmptyLines: true })
