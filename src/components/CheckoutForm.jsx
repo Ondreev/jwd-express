@@ -23,7 +23,7 @@ export function CheckoutForm({ items }) {
       .join('\n')
 
     try {
-      const res = await fetch('https://script.google.com/macros/s/AKfycby-UZnq9rWVkcbfYKAOLdqmkY5x-q5oIUyAG0OAdOeX7CGGeELN4Nlil48pLB669OaV4g/exec', {
+      const res = await fetch('https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
