@@ -1,8 +1,11 @@
+// ✅ Обновлённая админка — поддержка заказов с количеством, ценами из products и скидками
 import { useEffect, useState } from 'react'
 import Papa from 'papaparse'
 
 const CSV_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vR322Pt499Vfg2H8lFKITDC7GIJiZgkq4tubdCKCZR87zeqRVhRBx8NoGk9RL09slKkOT0sFrJaOelE/pub?gid=1075610539&single=true&output=csv'
+const PRODUCTS_URL =
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQGY3v0jRx3P2vmMLmnfbvRDP5PBqHqunh8dU7KcnFxWqipX5YZtLnUbB6tx1smYV9KmN1xUEi3fF-K/pub?gid=0&single=true&output=csv'
 const SETTINGS_URL =
   'https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getSettings'
 const ADMIN_PASS_URL =
@@ -17,19 +20,18 @@ function formatPrice(price) {
   return price.toLocaleString('ru-RU') + '₽'
 }
 
-function parseItems(orderStr) {
+function parseItems(orderStr, productsList = []) {
   const items = []
-  const lines = orderStr.split('\n').map(l => l.trim()).filter(Boolean)
+  const parts = orderStr.split(',').map(p => p.trim()).filter(Boolean)
 
-  for (let line of lines) {
-    const parts = line.split('|').map(p => p.trim())
-    if (parts.length === 3) {
-      const [name, priceStr, qtyStr] = parts
-      const price = parseInt(priceStr)
-      const quantity = parseInt(qtyStr)
-      if (!isNaN(price) && !isNaN(quantity)) {
-        items.push({ name, price, quantity })
-      }
+  for (let part of parts) {
+    const match = part.match(/^(.+?) x\s*(\d+)$/i)
+    if (match) {
+      const name = match[1].trim()
+      const quantity = parseInt(match[2])
+      const found = productsList.find(p => p.name === name)
+      const price = found?.discount || found?.price || 0
+      items.push({ name, price, quantity })
     }
   }
 
@@ -59,6 +61,7 @@ function getBestDiscount(total, rules) {
 
 export function AdminPanel() {
   const [orders, setOrders] = useState(null)
+  const [productsList, setProductsList] = useState([])
   const [discountRules, setDiscountRules] = useState([])
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [password, setPassword] = useState('')
@@ -68,15 +71,24 @@ export function AdminPanel() {
 
     async function loadData() {
       try {
-        const [csvText, settingsRes] = await Promise.all([
+        const [csvText, settingsRes, productsText] = await Promise.all([
           fetch(CSV_URL).then(res => res.text()),
-          fetch(SETTINGS_URL).then(res => res.json())
+          fetch(SETTINGS_URL).then(res => res.json()),
+          fetch(PRODUCTS_URL).then(res => res.text())
         ])
 
         const parsedOrders = parseCSV(csvText)
-        const rules = getDiscountRules(settingsRes)
+        const parsedProducts = Papa.parse(productsText.trim(), { header: true }).data
+          .map(row => ({
+            name: row['name']?.trim(),
+            price: parseInt(row['price'] || '0'),
+            discount: parseInt(row['discoun'] || '0'),
+          }))
+          .filter(p => p.name && !isNaN(p.price))
+
         setOrders(parsedOrders)
-        setDiscountRules(rules)
+        setProductsList(parsedProducts)
+        setDiscountRules(getDiscountRules(settingsRes))
       } catch (error) {
         console.error('Ошибка при загрузке данных:', error)
       }
@@ -130,7 +142,7 @@ export function AdminPanel() {
       <h2 className="text-2xl font-bold mb-6">Заказы</h2>
 
       {orders.map((order, i) => {
-        const items = parseItems(order['Заказ'] || '')
+        const items = parseItems(order['Заказ'] || '', productsList)
         const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
         const matchedRule = getBestDiscount(total, discountRules)
         const discountAmount = Math.round(total * matchedRule.percent / 100)
