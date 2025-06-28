@@ -1,4 +1,4 @@
-// ✅ CheckoutForm.jsx с восстановленным тёмным дизайном в стиле сайта и акцентом на скидке
+// CheckoutForm.jsx с автоскрытием формы после успешной отправки
 import React, { useState } from 'react'
 
 export function CheckoutForm({ items = [] }) {
@@ -7,6 +7,7 @@ export function CheckoutForm({ items = [] }) {
   const [address, setAddress] = useState('')
   const [note, setNote] = useState('')
   const [status, setStatus] = useState('')
+  const [submitted, setSubmitted] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -33,6 +34,7 @@ export function CheckoutForm({ items = [] }) {
       const res = await fetch(url.toString())
       const data = await res.json()
       if (data.status === 'ok') {
+        setSubmitted(true)
         setStatus('Заказ отправлен')
       } else {
         setStatus('Ошибка при отправке')
@@ -41,6 +43,14 @@ export function CheckoutForm({ items = [] }) {
       console.error('Ошибка при отправке:', err)
       setStatus('Ошибка отправки')
     }
+  }
+
+  if (submitted) {
+    return (
+      <div className="bg-gray-800 text-white rounded-2xl p-4 mt-6 shadow-xl max-w-xl mx-auto text-center">
+        <p className="text-lg font-bold text-yellow-400">Ваш заказ отправлен!</p>
+      </div>
+    )
   }
 
   return (
