@@ -79,7 +79,7 @@ export function Cart({ cart = [], discountRules = [], onQuantityChange = () => {
               <button
                 onClick={() => {
                   const qty = parseInt(newQty)
-                  if (!isNaN(qty) && qty > 0) onQuantityChange(popupItem.id, qty)
+                  if (!isNaN(qty) && qty > 0) onQuantityChange(popupItem.name, qty)
                   setPopupItem(null)
                 }}
                 className="bg-yellow-500 text-black px-3 py-1 rounded font-semibold"
