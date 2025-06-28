@@ -34,36 +34,30 @@ function App() {
   }, [isAdmin])
 
   const addToCart = (product) => {
-    setCart((prev) => {
-      const existing = prev.find((p) => p.name === product.name)
-      if (existing) {
-        return prev.map((p) =>
-          p.name === product.name
-            ? { ...p, quantity: p.quantity + 1 }
-            : p
-        )
-      } else {
-        return [...prev, { ...product, quantity: 1 }]
-      }
-    })
-  }
+  setCart((prev) => {
+    const existing = prev.find((p) => p.id === product.id)
+    if (existing) {
+      return prev.map((p) =>
+        p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
+      )
+    } else {
+      return [...prev, { ...product, quantity: 1 }]
+    }
+  })
+}
 
-  const removeFromCart = (name) => {
-    setCart((prev) =>
-      prev
-        .map((p) =>
-          p.name === name
-            ? { ...p, quantity: p.quantity - 1 }
-            : p
-        )
-        .filter((p) => p.quantity > 0)
-    )
-  }
+const removeFromCart = (id) => {
+  setCart((prev) =>
+    prev
+      .map((p) => (p.id === id ? { ...p, quantity: p.quantity - 1 } : p))
+      .filter((p) => p.quantity > 0)
+  )
+}
 
-  const getQuantity = (name) => {
-    const item = cart.find((p) => p.name === name)
-    return item ? item.quantity : 0
-  }
+const getQuantity = (id) => {
+  const item = cart.find((p) => p.id === id)
+  return item ? item.quantity : 0
+}
 
   const handleLogin = async () => {
     try {
