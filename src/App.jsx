@@ -70,14 +70,14 @@ function App() {
     )
   }
 
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) return
-    setCart((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, quantity: newQuantity } : p
-      )
+  const updateQuantity = (name, newQuantity) => {
+  if (newQuantity < 1) return
+  setCart((prev) =>
+    prev.map((p) =>
+      p.name === name ? { ...p, quantity: newQuantity } : p
     )
-  }
+  )
+}
 
   const getQuantity = (id) => {
     const item = cart.find((p) => p.id === id)
