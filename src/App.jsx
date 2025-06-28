@@ -38,7 +38,9 @@ function App() {
       const existing = prev.find((p) => p.name === product.name)
       if (existing) {
         return prev.map((p) =>
-          p.name === product.name ? { ...p, quantity: p.quantity + 1 } : p
+          p.name === product.name
+            ? { ...p, quantity: p.quantity + 1 }
+            : p
         )
       } else {
         return [...prev, { ...product, quantity: 1 }]
@@ -50,7 +52,9 @@ function App() {
     setCart((prev) =>
       prev
         .map((p) =>
-          p.name === name ? { ...p, quantity: p.quantity - 1 } : p
+          p.name === name
+            ? { ...p, quantity: p.quantity - 1 }
+            : p
         )
         .filter((p) => p.quantity > 0)
     )
@@ -107,7 +111,7 @@ function App() {
             addToCart={addToCart}
             removeFromCart={removeFromCart}
             getQuantity={getQuantity}
-            discountRules={[]}
+            discountRules={[]} // позже подключим
           />
         </div>
         <div>
