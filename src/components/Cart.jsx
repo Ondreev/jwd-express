@@ -1,68 +1,54 @@
-// ✅ Cart.jsx с поддержкой ручного ввода и обновления количества по имени товара
+// ✅ Обновлённый Cart.jsx: поддержка ручного ввода количества + тёмный стиль
 import React from 'react'
 
-export function Cart({ cart = [], discountRules = [], onChangeQuantity }) {
+export function Cart({ cart = [], discountRules = [], updateQuantity }) {
   if (cart.length === 0) return null
 
   const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽'
 
-  const grouped = cart.reduce((acc, item) => {
-    const key = item.name
-    acc[key] = acc[key] || { ...item, quantity: 0 }
-    acc[key].quantity += 1
-    return acc
-  }, {})
-
-  const uniqueItems = Object.values(grouped)
-
-  const totalOriginal = uniqueItems.reduce(
+  const totalOriginal = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   )
 
-  const matched = discountRules
-    .filter((rule) => totalOriginal >= rule.threshold)
-    .sort((a, b) => b.threshold - a.threshold)[0]
+  const matchedRule = discountRules
+    .slice()
+    .reverse()
+    .find((rule) => totalOriginal >= rule.min)
 
-  const discount = matched ? matched.discount : 0
-  const totalWithDiscount = totalOriginal - discount
+  const discountPercent = matchedRule ? matchedRule.percent : 0
+  const discountAmount = Math.floor((totalOriginal * discountPercent) / 100)
+  const total = totalOriginal - discountAmount
 
   return (
-    <div className="bg-gray-800 text-white rounded-2xl p-4 shadow-xl">
+    <div className="bg-gray-800 text-white p-4 rounded-2xl shadow-xl">
       <h2 className="text-xl font-bold mb-3">Корзина</h2>
-      {uniqueItems.map((item) => (
-        <div key={item.name} className="flex justify-between items-center mb-1">
-          <div>
-            {item.name}
+      <div className="space-y-1 mb-2">
+        {cart.map((item) => (
+          <div
+            key={item.id}
+            className="flex justify-between items-center text-sm bg-gray-700 rounded p-1 px-2"
+          >
+            <span className="truncate w-2/5">{item.name}</span>
             <input
-              type="text"
-              inputMode="numeric"
-              pattern="\\d*"
-              className="ml-2 w-10 text-center bg-gray-700 text-white rounded focus:outline-none"
+              type="number"
+              min="1"
               value={item.quantity}
-              onChange={(e) => {
-                const value = parseInt(e.target.value)
-                if (!isNaN(value) && value >= 0) {
-                  onChangeQuantity(item.name, value)
-                }
-              }}
+              onChange={(e) => updateQuantity(item.id, parseInt(e.target.value))}
+              className="bg-gray-600 w-12 text-center rounded mx-2 text-white no-spinner"
             />
+            <span>{formatPrice(item.price * item.quantity)}</span>
           </div>
-          <div>{formatPrice(item.price * item.quantity)}</div>
+        ))}
+      </div>
+      {discountPercent > 0 && (
+        <div className="text-yellow-400 text-sm font-medium mb-2">
+          Вы сэкономили {discountPercent}% / {formatPrice(discountAmount)}
         </div>
-      ))}
-
-      {discount > 0 && (
-        <p className="text-yellow-400 font-semibold mt-2">
-          Вы сэкономили {matched.percent}% / {formatPrice(discount)}
-        </p>
       )}
-
-      <hr className="my-2 border-gray-700" />
-
-      <p className="font-bold text-lg flex justify-between">
-        <span>Итого:</span> <span>{formatPrice(totalWithDiscount)}</span>
-      </p>
+      <div className="text-lg font-bold">
+        Итого: <span>{formatPrice(total)}</span>
+      </div>
     </div>
   )
 }
