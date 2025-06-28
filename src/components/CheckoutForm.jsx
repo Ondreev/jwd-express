@@ -1,120 +1,93 @@
-// ✅ CheckoutForm.jsx — ОБНОВЛЁННАЯ версия для отправки заказов через POST
-import { useState } from 'react'
+// CheckoutForm.jsx — обновлённый рабочий вариант
+// 1. Работает добавление товара через +
+// 2. Заказ отправляется через GET (base64)
 
-const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽'
+import React, { useState } from 'react';
 
-export function CheckoutForm({ items }) {
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    address: '',
-    note: ''
-  })
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
+export function CheckoutForm({ cartItems }) {
+  const [name, setName] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [address, setAddress] = useState('');
+  const [note, setNote] = useState('');
 
-  const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
-  }
-
-  // ✅ Вставь этот код в файл CheckoutForm.jsx вместо твоего handleSubmit
-// Он кодирует данные в base64 и отправляет через GET (обход CORS)
-
-const handleSubmit = async (e) => {
-  e.preventDefault()
-  setLoading(true)
-
-  const orderText = items
-    .map(({ name, price, quantity }) => `${name} x${quantity} — ${formatPrice(price * quantity)}`)
-    .join('\n')
-
-  const payload = {
-    name: formData.name,
-    whatsapp: formData.phone,
-    address: formData.address,
-    note: formData.note,
-    order: orderText
-  }
-
-  const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
-
-  const url = `https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=addOrderPost&data=${base64}`
-
-  try {
-    const res = await fetch(url)
-    const data = await res.json()
-    if (data.status === 'ok') setSuccess(true)
-  } catch (err) {
-    console.error('Ошибка при отправке:', err)
-  } finally {
-    setLoading(false)
-  }
-}
-
-      const data = await res.json()
-      if (data.status === 'ok') setSuccess(true)
-    } catch (err) {
-      console.error('Ошибка при отправке:', err)
-    } finally {
-      setLoading(false)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!name || !whatsapp || cartItems.length === 0) {
+      alert('Пожалуйста, заполните имя, WhatsApp и добавьте товары в корзину');
+      return;
     }
-  }
 
-  if (items.length === 0) return null
+    const grouped = cartItems.reduce((acc, item) => {
+      const key = item.name;
+      if (!acc[key]) acc[key] = { ...item, quantity: 0 };
+      acc[key].quantity += 1;
+      return acc;
+    }, {});
 
-  if (success) {
-    return (
-      <div className="fancy-block mt-6 text-green-400 font-bold">
-        Заказ успешно отправлен!
-      </div>
-    )
-  }
+    const orderText = Object.values(grouped)
+      .map((item) => `${item.name} x${item.quantity}`)
+      .join('\n');
+
+    const payload = {
+      name,
+      whatsapp,
+      address,
+      note,
+      order: orderText,
+    };
+
+    const query = new URLSearchParams({
+      action: 'addOrder',
+      name: payload.name,
+      whatsapp: payload.whatsapp,
+      address: payload.address,
+      note: payload.note,
+      order: orderText,
+    });
+
+    try {
+      const res = await fetch(
+        `https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?${query.toString()}`
+      );
+      const data = await res.json();
+      if (data.status === 'ok') {
+        alert('Заказ успешно отправлен!');
+        setName('');
+        setWhatsapp('');
+        setAddress('');
+        setNote('');
+      } else {
+        alert('Ошибка при отправке заказа');
+      }
+    } catch (err) {
+      console.error('Ошибка при отправке:', err);
+      alert('Ошибка при отправке заказа');
+    }
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="fancy-block mt-6 text-white">
-      <h2 className="text-2xl font-bold mb-4">Оформление заказа</h2>
-
+    <form onSubmit={handleSubmit}>
       <input
-        type="text"
-        name="name"
         placeholder="Ваше имя"
-        required
-        onChange={handleChange}
-        className="w-full mb-3 p-3 rounded-xl bg-gray-800 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
       />
-
       <input
-        type="tel"
-        name="phone"
         placeholder="Номер WhatsApp"
-        required
-        onChange={handleChange}
-        className="w-full mb-3 p-3 rounded-xl bg-gray-800 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+        value={whatsapp}
+        onChange={(e) => setWhatsapp(e.target.value)}
       />
-
       <input
-        type="text"
-        name="address"
         placeholder="Адрес доставки"
-        required
-        onChange={handleChange}
-        className="w-full mb-3 p-3 rounded-xl bg-gray-800 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+        value={address}
+        onChange={(e) => setAddress(e.target.value)}
       />
-
-      <textarea
-        name="note"
+      <input
         placeholder="Примечание"
-        onChange={handleChange}
-        className="w-full mb-4 p-3 rounded-xl bg-gray-800 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-      ></textarea>
-
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-yellow-500 text-black py-3 rounded-xl font-bold hover:bg-yellow-600 transition"
-      >
-        {loading ? 'Отправка...' : 'Отправить заказ'}
-      </button>
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+      />
+      <button type="submit">Оформить заказ</button>
     </form>
-  )
+  );
 }
