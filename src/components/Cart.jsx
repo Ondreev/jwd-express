@@ -1,47 +1,55 @@
-// ✅ Обновлённая корзина с редактируемым количеством и корректной логикой скидок
+// ✅ Обновлённый Cart.jsx — красивый и рабочий, со скидкой из таблицы и компактным полем
 import React from 'react'
 
 export function Cart({ cart = [], discountRules = [], updateQuantity }) {
-  if (!Array.isArray(cart) || cart.length === 0) return null
+  if (!cart.length) return null
 
   const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽'
 
-  const totalOriginal = cart.reduce((sum, item) => sum + item.originalPrice * item.quantity, 0)
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const totalOriginal = cart.reduce(
+    (sum, item) => sum + item.originalPrice * item.quantity,
+    0
+  )
+  const total = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  )
+
   const discount = totalOriginal - total
-  const discountPercent = Math.round((discount / totalOriginal) * 100)
+  const discountPercent = totalOriginal ? Math.round((discount / totalOriginal) * 100) : 0
 
   return (
-    <div className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg mb-6">
-      <h2 className="text-xl font-bold mb-4">Корзина</h2>
-      <div className="space-y-3">
-        {cart.map((item) => (
-          <div key={item.id} className="flex justify-between items-center">
-            <div className="font-semibold w-1/3 truncate">{item.name}</div>
+    <div className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg mt-4">
+      <h2 className="text-xl font-bold mb-3">Корзина</h2>
+      {cart.map((item) => (
+        <div key={item.id} className="mb-2">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold">{item.name}</span>
+            <span>*</span>
             <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              className="w-16 px-2 py-1 rounded bg-gray-800 text-white border border-gray-600 text-center focus:outline-none"
+              type="number"
+              min={1}
               value={item.quantity}
-              onChange={(e) => {
-                const val = parseInt(e.target.value)
-                updateQuantity(item.id, isNaN(val) ? 1 : val)
-              }}
+              onChange={(e) => updateQuantity(item.id, Number(e.target.value))}
+              className="w-12 text-center bg-gray-800 border border-gray-600 rounded px-1 py-0.5 text-white text-sm"
             />
-            <div className="text-sm text-right w-1/3">
-              {formatPrice(item.price)} × {item.quantity} ={' '}
-              <span className="font-bold">{formatPrice(item.price * item.quantity)}</span>
-            </div>
+            <span>=</span>
+            <span className="font-semibold">{formatPrice(item.price * item.quantity)}</span>
           </div>
-        ))}
-      </div>
-      <hr className="my-4 border-gray-700" />
+          <div className="text-xs text-gray-400 ml-1">
+            {formatPrice(item.price)} × {item.quantity}
+          </div>
+        </div>
+      ))}
+
+      <hr className="my-3 border-gray-600" />
+
       {discount > 0 && (
-        <div className="text-yellow-400 font-bold mb-2">
+        <div className="text-yellow-400 font-semibold mb-2">
           Вы сэкономили {discountPercent}% / {formatPrice(discount)}
         </div>
       )}
+
       <div className="text-lg font-bold">Итого: {formatPrice(total)}</div>
     </div>
   )
