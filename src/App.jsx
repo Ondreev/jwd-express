@@ -1,3 +1,4 @@
+// App.jsx
 import { useState, useEffect } from 'react'
 import { ProductList } from './components/ProductList'
 import { Cart } from './components/Cart'
@@ -17,7 +18,7 @@ function App() {
         if (Array.isArray(data)) {
           const cleaned = data.map(p => ({
             ...p,
-            name: p.name,
+            id: String(p.id),
             price: Number(p.price),
             originalPrice: Number(p.price),
             promo: p.promo === true || p.promo === 'TRUE'
@@ -34,30 +35,30 @@ function App() {
   }, [isAdmin])
 
   const addToCart = (product) => {
-  setCart((prev) => {
-    const existing = prev.find((p) => p.id === product.id)
-    if (existing) {
-      return prev.map((p) =>
-        p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
-      )
-    } else {
-      return [...prev, { ...product, quantity: 1 }]
-    }
-  })
-}
+    setCart((prev) => {
+      const existing = prev.find((p) => p.id === product.id)
+      if (existing) {
+        return prev.map((p) =>
+          p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
+        )
+      } else {
+        return [...prev, { ...product, quantity: 1 }]
+      }
+    })
+  }
 
-const removeFromCart = (id) => {
-  setCart((prev) =>
-    prev
-      .map((p) => (p.id === id ? { ...p, quantity: p.quantity - 1 } : p))
-      .filter((p) => p.quantity > 0)
-  )
-}
+  const removeFromCart = (id) => {
+    setCart((prev) =>
+      prev
+        .map((p) => (p.id === id ? { ...p, quantity: p.quantity - 1 } : p))
+        .filter((p) => p.quantity > 0)
+    )
+  }
 
-const getQuantity = (id) => {
-  const item = cart.find((p) => p.id === id)
-  return item ? item.quantity : 0
-}
+  const getQuantity = (id) => {
+    const item = cart.find((p) => p.id === id)
+    return item ? item.quantity : 0
+  }
 
   const handleLogin = async () => {
     try {
@@ -105,11 +106,11 @@ const getQuantity = (id) => {
             addToCart={addToCart}
             removeFromCart={removeFromCart}
             getQuantity={getQuantity}
-            discountRules={[]} // позже подключим
+            discountRules={[]}
           />
         </div>
         <div>
-          <Cart cart={cart} />
+          <Cart cart={cart} discountRules={[]} />
           <CheckoutForm items={cart} />
         </div>
       </main>
