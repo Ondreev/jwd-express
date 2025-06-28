@@ -13,12 +13,12 @@ export function ProductList({ products, addToCart, removeFromCart, getQuantity, 
 
         return (
           <ProductCard
-            key={product.id}
-            product={{
-              ...product,
-              discountedPrice,
-              originalPrice: price
-            }}
+  key={product.id}
+  product={{
+    ...product,
+    price: discountedPrice, // нужно!
+    originalPrice: price
+  }}
             addToCart={addToCart}
             removeFromCart={removeFromCart}
             getQuantity={getQuantity}
