@@ -1,87 +1,91 @@
-import React, { useState } from 'react';
+// ✅ Новый корректный CheckoutForm.jsx с полной поддержкой GET, правильным оформлением заказа и fallback на пустой массив
+import React, { useState } from 'react'
 
-export function CheckoutForm({ cartItems }) {
-  const [name, setName] = useState('');
-  const [whatsapp, setWhatsapp] = useState('');
-  const [address, setAddress] = useState('');
-  const [note, setNote] = useState('');
+export function CheckoutForm({ items = [] }) {
+  const [name, setName] = useState('')
+  const [whatsapp, setWhatsapp] = useState('')
+  const [address, setAddress] = useState('')
+  const [note, setNote] = useState('')
+  const [status, setStatus] = useState('')
 
-  const handleSubmit = async () => {
-    if (!cartItems || cartItems.length === 0) {
-      alert('Корзина пуста');
-      return;
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (items.length === 0) {
+      alert('Корзина пуста')
+      return
     }
 
-    const orderText = cartItems.reduce((text, item) => {
-      return text + `${item.name} x${item.quantity || 1}\n`;
-    }, '');
+    const orderText = items
+      .map((item) => `${item.name} x ${item.quantity}`)
+      .join(', ')
 
     const url = new URL(
       'https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec'
-    );
-
-    url.searchParams.append('action', 'addOrder');
-    url.searchParams.append('name', name);
-    url.searchParams.append('whatsapp', whatsapp);
-    url.searchParams.append('address', address);
-    url.searchParams.append('note', note);
-    url.searchParams.append('order', orderText);
+    )
+    url.searchParams.append('action', 'addOrder')
+    url.searchParams.append('name', name)
+    url.searchParams.append('whatsapp', whatsapp)
+    url.searchParams.append('address', address)
+    url.searchParams.append('note', note)
+    url.searchParams.append('order', orderText)
 
     try {
-      const res = await fetch(url);
-      const data = await res.json();
+      const res = await fetch(url.toString())
+      const data = await res.json()
       if (data.status === 'ok') {
-        alert('Заказ отправлен!');
-        setName('');
-        setWhatsapp('');
-        setAddress('');
-        setNote('');
+        setStatus('Заказ отправлен')
       } else {
-        alert('Ошибка при отправке заказа');
+        setStatus('Ошибка при отправке')
       }
     } catch (err) {
-      console.error('Ошибка при отправке:', err);
-      alert('Ошибка при отправке');
+      console.error('Ошибка при отправке:', err)
+      setStatus('Ошибка отправки')
     }
-  };
+  }
 
   return (
-    <div className="bg-white text-black p-4 rounded shadow">
-      <h2 className="text-xl font-bold mb-4">Оформление заказа</h2>
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white text-black rounded-xl p-4 mt-4 shadow-lg"
+    >
+      <h2 className="text-lg font-bold mb-2">Оформление заказа</h2>
       <input
         type="text"
-        placeholder="Имя"
-        className="block w-full mb-2 p-2 border rounded"
+        placeholder="Ваше имя"
+        className="border p-2 rounded w-full mb-2"
         value={name}
         onChange={(e) => setName(e.target.value)}
+        required
       />
       <input
         type="text"
         placeholder="WhatsApp"
-        className="block w-full mb-2 p-2 border rounded"
+        className="border p-2 rounded w-full mb-2"
         value={whatsapp}
         onChange={(e) => setWhatsapp(e.target.value)}
+        required
       />
       <input
         type="text"
-        placeholder="Адрес"
-        className="block w-full mb-2 p-2 border rounded"
+        placeholder="Адрес доставки"
+        className="border p-2 rounded w-full mb-2"
         value={address}
         onChange={(e) => setAddress(e.target.value)}
+        required
       />
-      <input
-        type="text"
-        placeholder="Примечание"
-        className="block w-full mb-4 p-2 border rounded"
+      <textarea
+        placeholder="Комментарий к заказу"
+        className="border p-2 rounded w-full mb-2"
         value={note}
         onChange={(e) => setNote(e.target.value)}
       />
       <button
-        onClick={handleSubmit}
-        className="bg-yellow-500 text-black px-4 py-2 rounded font-bold hover:bg-yellow-600"
+        type="submit"
+        className="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-400 font-semibold"
       >
         Отправить заказ
       </button>
-    </div>
-  );
+      {status && <p className="mt-2 text-sm text-green-600">{status}</p>}
+    </form>
+  )
 }
