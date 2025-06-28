@@ -1,4 +1,4 @@
-// ✅ Финальный код для App.jsx с загрузкой discountRules из Google Таблицы
+// ✅ Финальный код для App.jsx с поддержкой updateQuantity и остальной логикой
 import { useState, useEffect } from 'react'
 import { ProductList } from './components/ProductList'
 import { Cart } from './components/Cart'
@@ -71,6 +71,15 @@ function App() {
     )
   }
 
+  const updateQuantity = (id, newQuantity) => {
+    if (newQuantity < 1) return
+    setCart((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, quantity: newQuantity } : p
+      )
+    )
+  }
+
   const getQuantity = (id) => {
     const item = cart.find((p) => p.id === id)
     return item ? item.quantity : 0
@@ -126,7 +135,11 @@ function App() {
           />
         </div>
         <div>
-          <Cart cart={cart} discountRules={discountRules} />
+          <Cart
+            cart={cart}
+            discountRules={discountRules}
+            updateQuantity={updateQuantity}
+          />
           <CheckoutForm items={cart} />
         </div>
       </main>
