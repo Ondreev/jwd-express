@@ -1,15 +1,16 @@
 // Cart.jsx
+// Cart.jsx
 import React from 'react'
+
+const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽'
 
 export function Cart({ cart = [], discountRules = [] }) {
   if (cart.length === 0) return null
 
-  const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽'
-
   const grouped = cart.reduce((acc, item) => {
     const key = item.name
     acc[key] = acc[key] || { ...item, quantity: 0 }
-    acc[key].quantity += 1
+    acc[key].quantity += item.quantity || 1
     return acc
   }, {})
 
