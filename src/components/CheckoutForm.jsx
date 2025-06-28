@@ -17,28 +17,39 @@ export function CheckoutForm({ items }) {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+  // ✅ Вставь этот код в файл CheckoutForm.jsx вместо твоего handleSubmit
+// Он кодирует данные в base64 и отправляет через GET (обход CORS)
 
-    const orderText = items
-      .map(({ name, price, quantity }) => `${name} x${quantity} — ${formatPrice(price * quantity)}`)
-      .join('\n')
+const handleSubmit = async (e) => {
+  e.preventDefault()
+  setLoading(true)
 
-    try {
-      const res = await fetch('https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          whatsapp: formData.phone,
-          address: formData.address,
-          note: formData.note,
-          order: orderText
-        })
-      })
+  const orderText = items
+    .map(({ name, price, quantity }) => `${name} x${quantity} — ${formatPrice(price * quantity)}`)
+    .join('\n')
+
+  const payload = {
+    name: formData.name,
+    whatsapp: formData.phone,
+    address: formData.address,
+    note: formData.note,
+    order: orderText
+  }
+
+  const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
+
+  const url = `https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=addOrderPost&data=${base64}`
+
+  try {
+    const res = await fetch(url)
+    const data = await res.json()
+    if (data.status === 'ok') setSuccess(true)
+  } catch (err) {
+    console.error('Ошибка при отправке:', err)
+  } finally {
+    setLoading(false)
+  }
+}
 
       const data = await res.json()
       if (data.status === 'ok') setSuccess(true)
