@@ -1,4 +1,4 @@
-// CheckoutForm.jsx с автоскрытием формы после успешной отправки
+// ✅ CheckoutForm.jsx с визуалом, как у карточек товаров
 import React, { useState } from 'react'
 
 export function CheckoutForm({ items = [] }) {
@@ -35,7 +35,6 @@ export function CheckoutForm({ items = [] }) {
       const data = await res.json()
       if (data.status === 'ok') {
         setSubmitted(true)
-        setStatus('Заказ отправлен')
       } else {
         setStatus('Ошибка при отправке')
       }
@@ -47,8 +46,8 @@ export function CheckoutForm({ items = [] }) {
 
   if (submitted) {
     return (
-      <div className="bg-gray-800 text-white rounded-2xl p-4 mt-6 shadow-xl max-w-xl mx-auto text-center">
-        <p className="text-lg font-bold text-yellow-400">Ваш заказ отправлен!</p>
+      <div className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg">
+        <p className="text-yellow-400 font-bold text-center">Ваш заказ отправлен</p>
       </div>
     )
   }
@@ -56,13 +55,13 @@ export function CheckoutForm({ items = [] }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-gray-800 text-white rounded-2xl p-4 mt-6 shadow-xl max-w-xl mx-auto"
+      className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg hover:shadow-2xl transition duration-300"
     >
       <h2 className="text-xl font-bold mb-4">Оформление заказа</h2>
       <input
         type="text"
         placeholder="Ваше имя"
-        className="bg-gray-700 border border-gray-600 p-2 rounded w-full mb-3 text-white placeholder-gray-400"
+        className="bg-gray-800 border border-gray-700 p-2 rounded w-full mb-3 text-white placeholder-gray-400"
         value={name}
         onChange={(e) => setName(e.target.value)}
         required
@@ -70,7 +69,7 @@ export function CheckoutForm({ items = [] }) {
       <input
         type="text"
         placeholder="WhatsApp"
-        className="bg-gray-700 border border-gray-600 p-2 rounded w-full mb-3 text-white placeholder-gray-400"
+        className="bg-gray-800 border border-gray-700 p-2 rounded w-full mb-3 text-white placeholder-gray-400"
         value={whatsapp}
         onChange={(e) => setWhatsapp(e.target.value)}
         required
@@ -78,14 +77,14 @@ export function CheckoutForm({ items = [] }) {
       <input
         type="text"
         placeholder="Адрес доставки"
-        className="bg-gray-700 border border-gray-600 p-2 rounded w-full mb-3 text-white placeholder-gray-400"
+        className="bg-gray-800 border border-gray-700 p-2 rounded w-full mb-3 text-white placeholder-gray-400"
         value={address}
         onChange={(e) => setAddress(e.target.value)}
         required
       />
       <textarea
         placeholder="Комментарий к заказу"
-        className="bg-gray-700 border border-gray-600 p-2 rounded w-full mb-3 text-white placeholder-gray-400"
+        className="bg-gray-800 border border-gray-700 p-2 rounded w-full mb-3 text-white placeholder-gray-400"
         value={note}
         onChange={(e) => setNote(e.target.value)}
       />
