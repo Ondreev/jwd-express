@@ -1,68 +1,45 @@
-// ✅ Cart.jsx с восстановленным дизайном и правильным отображением скидок
+// ✅ Обновлённая корзина и форма заказа — единый стиль, корректное расстояние, поля ввода количества, корректные скидки
 import React from 'react'
 
-export function Cart({ cart = [], discountRules = [] }) {
-  if (cart.length === 0) return null
+export function Cart({ cart = [], discountRules = [], updateQuantity }) {
+  if (!Array.isArray(cart) || cart.length === 0) return null
 
   const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽'
 
-  const getDiscount = (total) => {
-    const matched = [...discountRules]
-      .sort((a, b) => b.min - a.min)
-      .find((r) => total >= r.min)
-    return matched ? matched.percent : 0
-  }
+  const totalOriginal = cart.reduce((sum, item) => sum + item.originalPrice * item.quantity, 0)
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
-  const discountedItems = cart.map((item) => {
-    const originalTotal = item.price * item.quantity
-    const discountPercent = getDiscount(originalTotal)
-    const finalPrice = Math.round(item.price * (1 - discountPercent / 100))
-    return { ...item, price: finalPrice, originalTotal }
-  })
-
-  const total = discountedItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  )
-
-  const totalWithoutDiscount = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  )
-
-  const totalDiscount = totalWithoutDiscount - total
-  const percentSaved = totalWithoutDiscount > 0
-    ? Math.round((totalDiscount / totalWithoutDiscount) * 100)
-    : 0
+  const discount = totalOriginal - total
+  const discountPercent = Math.round((discount / totalOriginal) * 100)
 
   return (
-    <div className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg mt-4">
+    <div className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg mb-4">
       <h2 className="text-xl font-bold mb-4">Корзина</h2>
-      <ul className="space-y-2">
-        {discountedItems.map((item) => (
-          <li key={item.id} className="flex justify-between items-center border-b border-gray-700 pb-2">
-            <span className="font-semibold">
-              {item.name}
+      {cart.map((item) => (
+        <div key={item.id} className="flex items-center justify-between mb-2">
+          <span className="font-semibold">{item.name}</span>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              min={1}
+              value={item.quantity}
+              onChange={(e) => updateQuantity(item.id, parseInt(e.target.value) || 1)}
+              className="w-16 px-2 py-1 rounded bg-gray-800 text-white border border-gray-600 appearance-none"
+            />
+            <span className="text-sm">
+              {formatPrice(item.price)} × {item.quantity} ={' '}
+              <span className="font-bold">{formatPrice(item.price * item.quantity)}</span>
             </span>
-            <span className="text-sm text-gray-400">
-              {formatPrice(item.price)} x {item.quantity} ={' '}
-              <span className="text-white font-bold">
-                {formatPrice(item.price * item.quantity)}
-              </span>
-            </span>
-          </li>
-        ))}
-      </ul>
-
-      {totalDiscount > 0 && (
-        <p className="mt-3 text-yellow-400 font-semibold">
-          Вы сэкономили {percentSaved}% / {formatPrice(totalDiscount)}
-        </p>
+          </div>
+        </div>
+      ))}
+      <hr className="my-2 border-gray-700" />
+      {discount > 0 && (
+        <div className="text-yellow-400 font-semibold mb-2">
+          Вы сэкономили {discountPercent}% / {formatPrice(discount)}
+        </div>
       )}
-
-      <div className="mt-3 text-lg font-bold">
-        Итого: {formatPrice(total)}
-      </div>
+      <div className="text-lg font-bold">Итого: {formatPrice(total)}</div>
     </div>
   )
 }
