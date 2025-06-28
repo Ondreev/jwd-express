@@ -1,4 +1,4 @@
-// ✅ Новый корректный CheckoutForm.jsx с полной поддержкой GET, правильным оформлением заказа и fallback на пустой массив
+// ✅ CheckoutForm.jsx с восстановленным тёмным дизайном в стиле сайта и акцентом на скидке
 import React, { useState } from 'react'
 
 export function CheckoutForm({ items = [] }) {
@@ -10,7 +10,7 @@ export function CheckoutForm({ items = [] }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (items.length === 0) {
+    if (!Array.isArray(items) || items.length === 0) {
       alert('Корзина пуста')
       return
     }
@@ -46,13 +46,13 @@ export function CheckoutForm({ items = [] }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white text-black rounded-xl p-4 mt-4 shadow-lg"
+      className="bg-gray-800 text-white rounded-2xl p-4 mt-6 shadow-xl max-w-xl mx-auto"
     >
-      <h2 className="text-lg font-bold mb-2">Оформление заказа</h2>
+      <h2 className="text-xl font-bold mb-4">Оформление заказа</h2>
       <input
         type="text"
         placeholder="Ваше имя"
-        className="border p-2 rounded w-full mb-2"
+        className="bg-gray-700 border border-gray-600 p-2 rounded w-full mb-3 text-white placeholder-gray-400"
         value={name}
         onChange={(e) => setName(e.target.value)}
         required
@@ -60,7 +60,7 @@ export function CheckoutForm({ items = [] }) {
       <input
         type="text"
         placeholder="WhatsApp"
-        className="border p-2 rounded w-full mb-2"
+        className="bg-gray-700 border border-gray-600 p-2 rounded w-full mb-3 text-white placeholder-gray-400"
         value={whatsapp}
         onChange={(e) => setWhatsapp(e.target.value)}
         required
@@ -68,24 +68,24 @@ export function CheckoutForm({ items = [] }) {
       <input
         type="text"
         placeholder="Адрес доставки"
-        className="border p-2 rounded w-full mb-2"
+        className="bg-gray-700 border border-gray-600 p-2 rounded w-full mb-3 text-white placeholder-gray-400"
         value={address}
         onChange={(e) => setAddress(e.target.value)}
         required
       />
       <textarea
         placeholder="Комментарий к заказу"
-        className="border p-2 rounded w-full mb-2"
+        className="bg-gray-700 border border-gray-600 p-2 rounded w-full mb-3 text-white placeholder-gray-400"
         value={note}
         onChange={(e) => setNote(e.target.value)}
       />
       <button
         type="submit"
-        className="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-400 font-semibold"
+        className="bg-yellow-500 text-black px-6 py-2 rounded-xl hover:bg-yellow-400 font-semibold w-full"
       >
         Отправить заказ
       </button>
-      {status && <p className="mt-2 text-sm text-green-600">{status}</p>}
+      {status && <p className="mt-3 text-sm text-orange-400 font-medium">{status}</p>}
     </form>
   )
 }
