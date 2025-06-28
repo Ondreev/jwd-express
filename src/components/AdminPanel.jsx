@@ -19,19 +19,16 @@ function formatPrice(price) {
 
 function parseItems(orderStr) {
   const items = []
-  const parts = orderStr.split(',').map(p => p.trim()).filter(Boolean)
+  const lines = orderStr.split('\n').map(l => l.trim()).filter(Boolean)
 
-  for (let part of parts) {
-    const match = part.match(/^(.+?) - (\d+)₽$/)
-    if (match) {
-      const name = match[1].trim()
-      const price = parseInt(match[2])
-      const key = `${name}-${price}`
-      const existing = items.find(i => i.name === name && i.price === price)
-      if (existing) {
-        existing.quantity += 1
-      } else {
-        items.push({ name, price, quantity: 1 })
+  for (let line of lines) {
+    const parts = line.split('|').map(p => p.trim())
+    if (parts.length === 3) {
+      const [name, priceStr, qtyStr] = parts
+      const price = parseInt(priceStr)
+      const quantity = parseInt(qtyStr)
+      if (!isNaN(price) && !isNaN(quantity)) {
+        items.push({ name, price, quantity })
       }
     }
   }
