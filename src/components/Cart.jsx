@@ -1,73 +1,67 @@
-// 🔧 Cart.jsx — усиление визуального акцента на скидке
+// ✅ Cart.jsx с восстановленным дизайном и правильным отображением скидок
 import React from 'react'
 
-export function Cart({ cart = [], discountRules = [], updateQuantity, addToCart, removeFromCart }) {
+export function Cart({ cart = [], discountRules = [] }) {
   if (cart.length === 0) return null
 
   const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽'
 
-  const totalOriginal = cart.reduce(
-    (sum, item) => sum + item.originalPrice * item.quantity,
+  const getDiscount = (total) => {
+    const matched = [...discountRules]
+      .sort((a, b) => b.min - a.min)
+      .find((r) => total >= r.min)
+    return matched ? matched.percent : 0
+  }
+
+  const discountedItems = cart.map((item) => {
+    const originalTotal = item.price * item.quantity
+    const discountPercent = getDiscount(originalTotal)
+    const finalPrice = Math.round(item.price * (1 - discountPercent / 100))
+    return { ...item, price: finalPrice, originalTotal }
+  })
+
+  const total = discountedItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
     0
   )
 
-  const currentDiscount = [...discountRules]
-    .reverse()
-    .find((rule) => totalOriginal >= rule.min)
+  const totalWithoutDiscount = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  )
 
-  const discount = currentDiscount?.percent || 0
-  const discountedTotal = Math.round(totalOriginal * (1 - discount / 100))
-  const savings = totalOriginal - discountedTotal
+  const totalDiscount = totalWithoutDiscount - total
+  const percentSaved = totalWithoutDiscount > 0
+    ? Math.round((totalDiscount / totalWithoutDiscount) * 100)
+    : 0
 
   return (
-    <div className="bg-gray-800 rounded-2xl p-4 shadow-lg">
+    <div className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg mt-4">
       <h2 className="text-xl font-bold mb-4">Корзина</h2>
-      {cart.map((item) => (
-        <div key={item.id} className="mb-3 border-b border-gray-600 pb-2">
-          <div className="flex justify-between items-center mb-1">
-            <div className="font-medium">{item.name}</div>
-            <div className="text-sm text-gray-400">
-              {formatPrice(item.originalPrice)} x {item.quantity} ={' '}
-              <span className="text-white font-semibold">
-                {formatPrice(item.originalPrice * item.quantity)}
+      <ul className="space-y-2">
+        {discountedItems.map((item) => (
+          <li key={item.id} className="flex justify-between items-center border-b border-gray-700 pb-2">
+            <span className="font-semibold">
+              {item.name}
+            </span>
+            <span className="text-sm text-gray-400">
+              {formatPrice(item.price)} x {item.quantity} ={' '}
+              <span className="text-white font-bold">
+                {formatPrice(item.price * item.quantity)}
               </span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => removeFromCart(item.id)}
-              className="px-2 bg-gray-700 rounded hover:bg-gray-600"
-            >
-              −
-            </button>
-            <input
-              type="number"
-              min="1"
-              className="w-12 text-center bg-gray-700 text-white rounded appearance-none"
-              value={item.quantity}
-              onChange={(e) => {
-                const value = parseInt(e.target.value)
-                if (!isNaN(value) && value > 0) updateQuantity(item.id, value)
-              }}
-            />
-            <button
-              onClick={() => addToCart(item)}
-              className="px-2 bg-gray-700 rounded hover:bg-gray-600"
-            >
-              +
-            </button>
-          </div>
-        </div>
-      ))}
+            </span>
+          </li>
+        ))}
+      </ul>
 
-      {discount > 0 && (
-        <div className="text-yellow-400 font-bold mt-4">
-          Вы сэкономили {discount}% / {formatPrice(savings)}
-        </div>
+      {totalDiscount > 0 && (
+        <p className="mt-3 text-yellow-400 font-semibold">
+          Вы сэкономили {percentSaved}% / {formatPrice(totalDiscount)}
+        </p>
       )}
 
-      <div className="mt-4 text-lg font-semibold">
-        Итого: {formatPrice(discountedTotal)}
+      <div className="mt-3 text-lg font-bold">
+        Итого: {formatPrice(total)}
       </div>
     </div>
   )
