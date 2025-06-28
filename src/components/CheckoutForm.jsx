@@ -1,4 +1,4 @@
-// CheckoutForm.jsx
+// ✅ CheckoutForm.jsx — ОБНОВЛЁННАЯ версия для отправки заказов через POST
 import { useState } from 'react'
 
 const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽'
