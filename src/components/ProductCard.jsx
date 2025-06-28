@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 export function ProductCard({ product, addToCart, removeFromCart, getQuantity }) {
   const {
+    id,
     name,
     image,
     description,
@@ -19,10 +20,20 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
 
   const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽'
 
-  const enrichedProduct = {
-    ...product,
-    price: discountedPrice,
-    originalPrice
+  const handleAdd = () => {
+    addToCart({
+      id,
+      name,
+      image,
+      description,
+      promo,
+      originalPrice,
+      price: discountedPrice
+    })
+  }
+
+  const handleRemove = () => {
+    removeFromCart(name)
   }
 
   return (
@@ -59,7 +70,7 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
 
       {quantity === 0 ? (
         <button
-          onClick={() => addToCart(enrichedProduct)}
+          onClick={handleAdd}
           className="w-full bg-yellow-500 text-black py-2 rounded-xl hover:bg-yellow-600 transition duration-200 font-bold"
         >
           В корзину
@@ -67,14 +78,14 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
       ) : (
         <div className="flex items-center justify-between gap-2">
           <button
-            onClick={() => removeFromCart(name)}
+            onClick={handleRemove}
             className="bg-yellow-300 text-black w-8 h-8 rounded-full font-bold text-xl hover:bg-yellow-400"
           >
             −
           </button>
           <span className="font-semibold text-lg text-white">{quantity}</span>
           <button
-            onClick={() => addToCart(enrichedProduct)}
+            onClick={handleAdd}
             className="bg-yellow-500 text-black w-8 h-8 rounded-full font-bold text-xl hover:bg-yellow-600"
           >
             +
