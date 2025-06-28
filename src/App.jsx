@@ -1,4 +1,3 @@
-// ✅ Финальный код для App.jsx с поддержкой updateQuantity и остальной логикой
 import { useState, useEffect } from 'react'
 import { ProductList } from './components/ProductList'
 import { Cart } from './components/Cart'
@@ -138,7 +137,7 @@ function App() {
           <Cart
             cart={cart}
             discountRules={discountRules}
-            updateQuantity={updateQuantity}
+            onQuantityChange={updateQuantity} {/* ← ВОТ ЭТА СТРОКА */}
           />
           <CheckoutForm items={cart} />
         </div>
