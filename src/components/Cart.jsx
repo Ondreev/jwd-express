@@ -1,4 +1,4 @@
-// ✅ Обновлённая корзина и форма заказа — единый стиль, корректное расстояние, поля ввода количества, корректные скидки
+// ✅ Обновлённая корзина с редактируемым количеством и корректной логикой скидок
 import React from 'react'
 
 export function Cart({ cart = [], discountRules = [], updateQuantity }) {
@@ -8,34 +8,37 @@ export function Cart({ cart = [], discountRules = [], updateQuantity }) {
 
   const totalOriginal = cart.reduce((sum, item) => sum + item.originalPrice * item.quantity, 0)
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
-
   const discount = totalOriginal - total
   const discountPercent = Math.round((discount / totalOriginal) * 100)
 
   return (
-    <div className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg mb-4">
+    <div className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg mb-6">
       <h2 className="text-xl font-bold mb-4">Корзина</h2>
-      {cart.map((item) => (
-        <div key={item.id} className="flex items-center justify-between mb-2">
-          <span className="font-semibold">{item.name}</span>
-          <div className="flex items-center gap-2">
+      <div className="space-y-3">
+        {cart.map((item) => (
+          <div key={item.id} className="flex justify-between items-center">
+            <div className="font-semibold w-1/3 truncate">{item.name}</div>
             <input
-              type="number"
-              min={1}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              className="w-16 px-2 py-1 rounded bg-gray-800 text-white border border-gray-600 text-center focus:outline-none"
               value={item.quantity}
-              onChange={(e) => updateQuantity(item.id, parseInt(e.target.value) || 1)}
-              className="w-16 px-2 py-1 rounded bg-gray-800 text-white border border-gray-600 appearance-none"
+              onChange={(e) => {
+                const val = parseInt(e.target.value)
+                updateQuantity(item.id, isNaN(val) ? 1 : val)
+              }}
             />
-            <span className="text-sm">
+            <div className="text-sm text-right w-1/3">
               {formatPrice(item.price)} × {item.quantity} ={' '}
               <span className="font-bold">{formatPrice(item.price * item.quantity)}</span>
-            </span>
+            </div>
           </div>
-        </div>
-      ))}
-      <hr className="my-2 border-gray-700" />
+        ))}
+      </div>
+      <hr className="my-4 border-gray-700" />
       {discount > 0 && (
-        <div className="text-yellow-400 font-semibold mb-2">
+        <div className="text-yellow-400 font-bold mb-2">
           Вы сэкономили {discountPercent}% / {formatPrice(discount)}
         </div>
       )}
