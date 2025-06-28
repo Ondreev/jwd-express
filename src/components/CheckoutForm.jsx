@@ -1,4 +1,7 @@
+// CheckoutForm.jsx
 import { useState } from 'react'
+
+const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽'
 
 export function CheckoutForm({ items }) {
   const [formData, setFormData] = useState({
@@ -19,7 +22,7 @@ export function CheckoutForm({ items }) {
     setLoading(true)
 
     const orderText = items
-      .map(({ name, price, quantity }) => `${name} x${quantity} — ${price * quantity}₽`)
+      .map(({ name, price, quantity }) => `${name} x${quantity} — ${formatPrice(price * quantity)}`)
       .join('\n')
 
     try {
@@ -104,4 +107,3 @@ export function CheckoutForm({ items }) {
     </form>
   )
 }
-
