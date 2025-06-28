@@ -16,25 +16,23 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
     : originalPrice
 
   const hasDiscount = discountedPrice < originalPrice
-  const quantity = getQuantity(name)
+  const quantity = getQuantity(id)
 
-  const formatPrice = (price) => price.toLocaleString('ru-RU') + '₽'
+const handleAdd = () => {
+  addToCart({
+    id,
+    name,
+    image,
+    description,
+    promo,
+    originalPrice,
+    price: discountedPrice
+  })
+}
 
-  const handleAdd = () => {
-    addToCart({
-      id,
-      name,
-      image,
-      description,
-      promo,
-      originalPrice,
-      price: discountedPrice
-    })
-  }
-
-  const handleRemove = () => {
-    removeFromCart(name)
-  }
+const handleRemove = () => {
+  removeFromCart(id)
+}
 
   return (
     <div className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 relative">
