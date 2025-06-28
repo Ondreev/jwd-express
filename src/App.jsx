@@ -70,14 +70,15 @@ function App() {
     )
   }
 
-  const updateQuantity = (name, newQuantity) => {
-  if (newQuantity < 1) return
-  setCart((prev) =>
-    prev.map((p) =>
-      p.name === name ? { ...p, quantity: newQuantity } : p
+  // ✅ Изменение количества по ID
+  const updateQuantity = (id, newQuantity) => {
+    if (newQuantity < 1) return
+    setCart((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, quantity: newQuantity } : p
+      )
     )
-  )
-}
+  }
 
   const getQuantity = (id) => {
     const item = cart.find((p) => p.id === id)
@@ -137,7 +138,7 @@ function App() {
           <Cart
             cart={cart}
             discountRules={discountRules}
-            onQuantityChange={updateQuantity} {/* ← ВОТ ЭТА СТРОКА */}
+            onQuantityChange={updateQuantity}
           />
           <CheckoutForm items={cart} />
         </div>
