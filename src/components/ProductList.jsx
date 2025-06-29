@@ -20,7 +20,7 @@ export default function ProductList() {
         const parsed = data.map(row => {
           const basePrice = parseFloat((row['price'] || '0').replace(',', '.'))
           const rawDiscount = String(row['discoun'] || '0')
-const discount = parseInt(rawDiscount.replace(/\D/g, '')) || 0
+          const discount = parseInt(rawDiscount.replace(/\D/g, '')) || 0
           const discountedPrice = Math.round(basePrice * (1 - discount / 100))
           return {
             name: row['name'],
