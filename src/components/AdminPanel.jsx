@@ -1,11 +1,11 @@
-// ✅ Обновённая админка — поддержка заказов с ценами из products и скидками
+// ✅ Фикс для подгрузки products из нового URL
 import { useEffect, useState } from 'react'
 import Papa from 'papaparse'
 
 const CSV_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vR322Pt499Vfg2H8lFKITDC7GIJiZgkq4tubdCKCZR87zeqRVhRBx8NoGk9RL09slKkOT0sFrJaOelE/pub?gid=1075610539&single=true&output=csv'
 const PRODUCTS_URL =
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQGY3v0jRx3P2vmMLmnfbvRDP5PBqHqunh8dU7KcnFxWqipX5YZtLnUbB6tx1smYV9KmN1xUEi3fF-K/pub?gid=0&single=true&output=csv'
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vR322Pt499Vfg2H8lFKITDC7GIJiZgkq4tubdCKCZR87zeqRVhRBx8NoGk9RL09slKkOT0sFrJaOelE/pub?gid=0&single=true&output=csv'
 const SETTINGS_URL =
   'https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getSettings'
 const ADMIN_PASS_URL =
@@ -31,7 +31,7 @@ function parseItems(orderStr, productsList = []) {
       const quantity = parseInt(match[2])
       const found = productsList.find(p => p.name === name)
       if (!found) continue
-      const discountPercent = parseInt(found.discoun || '0')
+      const discountPercent = parseInt(found.discount || '0')
       const price = Math.round(found.price * (1 - discountPercent / 100))
       items.push({ name, price, quantity })
     }
@@ -84,7 +84,7 @@ export function AdminPanel() {
           .map(row => ({
             name: row['name']?.trim(),
             price: parseInt(row['price'] || '0'),
-            discoun: parseInt(row['discoun'] || '0'),
+            discount: parseInt(row['discoun'] || '0'),
           }))
           .filter(p => p.name && !isNaN(p.price))
 
@@ -181,7 +181,7 @@ export function AdminPanel() {
               </div>
             ) : (
               <div className="text-yellow-400 font-semibold text-sm mt-2">
-                Не забудь применить скидку на объём!
+                Не забудь применить скидку на объем!
               </div>
             )}
 
