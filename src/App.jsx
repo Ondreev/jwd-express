@@ -1,4 +1,4 @@
-// ✅ Обновённая админка — поддержка заказов с ценами из products и скидками
+// ✅ Фикс для подгрузки products из нового URL
 import { useEffect, useState } from 'react'
 import Papa from 'papaparse'
 
@@ -31,7 +31,7 @@ function parseItems(orderStr, productsList = []) {
       const quantity = parseInt(match[2])
       const found = productsList.find(p => p.name === name)
       if (!found) continue
-      const discountPercent = parseInt(found.discoun || '0')
+      const discountPercent = parseInt(found.discount || '0')
       const price = Math.round(found.price * (1 - discountPercent / 100))
       items.push({ name, price, quantity })
     }
@@ -84,7 +84,7 @@ export function AdminPanel() {
           .map(row => ({
             name: row['name']?.trim(),
             price: parseInt(row['price'] || '0'),
-            discoun: parseInt(row['discoun'] || '0'),
+            discount: parseInt(row['discoun'] || '0'),
           }))
           .filter(p => p.name && !isNaN(p.price))
 
