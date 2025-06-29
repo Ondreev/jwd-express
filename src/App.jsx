@@ -1,4 +1,4 @@
-// ✅ Обновлённая админка с фиксами: всё загружается, скидки работают
+// ✅ Обновённая админка — поддержка заказов с ценами из products и скидками
 import { useEffect, useState } from 'react'
 import Papa from 'papaparse'
 
@@ -84,7 +84,7 @@ export function AdminPanel() {
           .map(row => ({
             name: row['name']?.trim(),
             price: parseInt(row['price'] || '0'),
-            discoun: parseInt(row['discoun'] || '0')
+            discoun: parseInt(row['discoun'] || '0'),
           }))
           .filter(p => p.name && !isNaN(p.price))
 
