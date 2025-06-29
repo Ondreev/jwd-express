@@ -1,4 +1,4 @@
-// ✅ Обновлённая админка — поддержка заказов с ценами из products и скидками
+// ✅ Обновённая админка — поддержка заказов с ценами из products и скидками
 import { useEffect, useState } from 'react'
 import Papa from 'papaparse'
 
@@ -181,7 +181,7 @@ export function AdminPanel() {
               </div>
             ) : (
               <div className="text-yellow-400 font-semibold text-sm mt-2">
-                Не забудь применить скидку на объем!
+                Не забудь применить скидку на объём!
               </div>
             )}
 
