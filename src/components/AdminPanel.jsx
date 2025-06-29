@@ -1,4 +1,4 @@
-// ✅ Обновлённая админка — поддержка заказов с количеством, ценами из products и скидками
+// ✅ Обновлённая админка — поддержка заказов с ценами из products и скидками
 import { useEffect, useState } from 'react'
 import Papa from 'papaparse'
 
@@ -30,14 +30,10 @@ function parseItems(orderStr, productsList = []) {
       const name = match[1].trim()
       const quantity = parseInt(match[2])
       const found = productsList.find(p => p.name === name)
-
-      if (found) {
-        const rawPrice = found.price || 0
-        const discountPercent = found.discount || 0
-        const price = Math.round(rawPrice * (100 - discountPercent) / 100)
-
-        items.push({ name, price, quantity })
-      }
+      if (!found) continue
+      const discountPercent = parseInt(found.discoun || '0')
+      const price = Math.round(found.price * (1 - discountPercent / 100))
+      items.push({ name, price, quantity })
     }
   }
 
@@ -88,7 +84,7 @@ export function AdminPanel() {
           .map(row => ({
             name: row['name']?.trim(),
             price: parseInt(row['price'] || '0'),
-            discount: parseInt(row['discoun'] || '0'),
+            discoun: parseInt(row['discoun'] || '0'),
           }))
           .filter(p => p.name && !isNaN(p.price))
 
