@@ -16,13 +16,20 @@ function App() {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
-          const cleaned = data.map(p => ({
-            ...p,
-            id: String(p.id),
-            price: Number(p.price),
-            originalPrice: Number(p.price),
-            promo: p.promo === true || p.promo === 'TRUE'
-          }))
+          const cleaned = data.map(p => {
+  const price = Number(String(p.price || '0').replace(',', '.').replace(' ', ''))
+  const discount = parseInt((p.discoun || '0').replace(/\D/g, '')) || 0
+  const discountedPrice = Math.round(price * (1 - discount / 100))
+
+  return {
+    ...p,
+    id: String(p.id),
+    price: discountedPrice,            // 👈 Это цена со скидкой
+    originalPrice: price,              // 👈 Это старая цена (зачёркнутая)
+    discount,
+    promo: p.promo === true || p.promo === 'TRUE'
+  }
+})
           setProducts(cleaned)
         } else {
           setProducts([])
