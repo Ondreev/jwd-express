@@ -19,7 +19,8 @@ export default function ProductList() {
         const { data } = Papa.parse(text.trim(), { header: true })
         const parsed = data.map(row => {
           const basePrice = parseFloat((row['price'] || '0').replace(',', '.'))
-          const discount = parseInt((row['discoun'] || '').replace(/\D/g, '')) || 0
+          const rawDiscount = String(row['discoun'] || '0')
+const discount = parseInt(rawDiscount.replace(/\D/g, '')) || 0
           const discountedPrice = Math.round(basePrice * (1 - discount / 100))
           return {
             name: row['name'],
