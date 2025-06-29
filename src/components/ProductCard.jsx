@@ -6,7 +6,7 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
   const { id, name, image, description, promo, originalPrice } = product
 
   const hasPromo = promo === true || promo === 'TRUE'
-  const discountedPrice = hasPromo ? Math.round(originalPrice * 0.8) : originalPrice
+  const discountedPrice = hasPromo ? Math.round(originalPrice * 0.95) : originalPrice
   const hasDiscount = discountedPrice < originalPrice
   const quantity = getQuantity(id)
 
