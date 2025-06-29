@@ -83,7 +83,7 @@ export function AdminPanel() {
         const parsedProducts = Papa.parse(productsText.trim(), { header: true }).data
           .map(row => ({
             name: row['name']?.trim(),
-            price: parseInt((row['price'] || '').replace(/\D/g, '')),
+            price: Math.round(parseFloat((row['price'] || '0').replace(/\s/g, '').replace(',', '.'))),
             discount: parseInt((row['discoun'] || '').replace(/\D/g, '')),
           }))
           .filter(p => p.name && !isNaN(p.price))
