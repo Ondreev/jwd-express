@@ -30,8 +30,14 @@ function parseItems(orderStr, productsList = []) {
       const name = match[1].trim()
       const quantity = parseInt(match[2])
       const found = productsList.find(p => p.name === name)
-      const price = found?.discount || found?.price || 0
-      items.push({ name, price, quantity })
+
+      if (found) {
+        const rawPrice = found.price || 0
+        const discountPercent = found.discount || 0
+        const price = Math.round(rawPrice * (100 - discountPercent) / 100)
+
+        items.push({ name, price, quantity })
+      }
     }
   }
 
