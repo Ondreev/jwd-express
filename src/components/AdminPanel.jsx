@@ -61,6 +61,22 @@ function getBestDiscount(total, rules) {
   return { percent: 0, min: 0 }
 }
 
+function formatWhatsAppLink(phoneRaw) {
+  if (!phoneRaw) return '#'
+  const cleaned = phoneRaw.replace(/[^\d+]/g, '')
+
+  let number = cleaned
+  if (number.startsWith('+')) {
+    number = number.slice(1)
+  } else if (number.startsWith('8')) {
+    number = '7' + number.slice(1)
+  } else if (number.length === 10) {
+    number = '7' + number
+  }
+
+  return `https://wa.me/${number}?text=${encodeURIComponent('Здравствуйте, Ваш заказ в приложении JWD Express готов!')}`
+}
+
 export function AdminPanel() {
   const [orders, setOrders] = useState(null)
   const [productsList, setProductsList] = useState([])
@@ -157,7 +173,17 @@ export function AdminPanel() {
           >
             <div className="text-sm mb-3">
               <div><strong>Имя:</strong> {order['Имя']}</div>
-              <div><strong>WhatsApp:</strong> {order['WhatsApp']}</div>
+              <div>
+                <strong>WhatsApp:</strong>{' '}
+                <a
+                  href={formatWhatsAppLink(order['WhatsApp'])}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-400 underline"
+                >
+                  {order['WhatsApp']}
+                </a>
+              </div>
               <div><strong>Адрес:</strong> {order['Адрес']}</div>
               {order['Примечание'] && <div><strong>Примечание:</strong> {order['Примечание']}</div>}
             </div>
