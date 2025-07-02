@@ -21,7 +21,7 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
   return (
     <div className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 relative">
       <div className="relative">
-        <img src={image} alt={name} className="w-full h-40 object-cover rounded mb-3" />
+        <img src={image} alt={name} className="w-full h-45 object-cover rounded mb-3" />
         {hasPromo && (
           <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">АКЦИЯ</span>
         )}
