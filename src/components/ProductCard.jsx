@@ -10,16 +10,8 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
   const hasDiscount = discountedPrice < originalPrice
   const quantity = getQuantity(id)
 
-  const [hearts, setHearts] = useState([])
-
   const handleAdd = () => {
     addToCart({ id, name, image, description, promo, originalPrice, price: discountedPrice })
-
-    const id = Date.now()
-    setHearts((prev) => [...prev, id])
-    setTimeout(() => {
-      setHearts((prev) => prev.filter((h) => h !== id))
-    }, 1000)
   }
 
   const handleRemove = () => {
@@ -53,36 +45,14 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
       </div>
 
       {quantity === 0 ? (
-        <button
-          onClick={handleAdd}
-          className="w-full bg-yellow-500 text-black py-2 rounded-xl hover:bg-yellow-600 transition duration-200 font-bold"
-        >
+        <button onClick={handleAdd} className="w-full bg-yellow-500 text-black py-2 rounded-xl hover:bg-yellow-600 transition duration-200 font-bold">
           В корзину
         </button>
       ) : (
-        <div className="flex items-center justify-between gap-2 relative">
+        <div className="flex items-center justify-between gap-2">
           <button onClick={handleRemove} className="bg-yellow-300 text-black w-8 h-8 rounded-full font-bold text-xl hover:bg-yellow-400">−</button>
           <span className="font-semibold text-lg text-white">{quantity}</span>
-
-          <div className="relative">
-            <button
-              onClick={handleAdd}
-              className="bg-yellow-500 text-black w-8 h-8 rounded-full font-bold text-xl hover:bg-yellow-600"
-            >
-              +
-            </button>
-
-            {/* Анимация сердечек */}
-            {hearts.map((h) => (
-              <span
-                key={h}
-                className="absolute left-1/2 transform -translate-x-1/2 text-pink-500 text-xl animate-heart pointer-events-none"
-                style={{ top: '-20px' }}
-              >
-                ❤️
-              </span>
-            ))}
-          </div>
+          <button onClick={handleAdd} className="bg-yellow-500 text-black w-8 h-8 rounded-full font-bold text-xl hover:bg-yellow-600">+</button>
         </div>
       )}
     </div>
