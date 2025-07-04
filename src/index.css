@@ -19,3 +19,14 @@ input[type='number'] {
 .custom-number-input {
   @apply bg-gray-800 border border-gray-600 text-white text-center rounded w-16 px-2 py-1;
 }
+
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 10s linear infinite;
+}
