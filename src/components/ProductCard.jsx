@@ -10,8 +10,17 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
   const hasDiscount = discountedPrice < originalPrice
   const quantity = getQuantity(id)
 
+  const [hearts, setHearts] = useState([])
+
   const handleAdd = () => {
     addToCart({ id, name, image, description, promo, originalPrice, price: discountedPrice })
+
+    const id = Date.now()
+    setHearts((prev) => [...prev, id])
+
+    setTimeout(() => {
+      setHearts((prev) => prev.filter((heartId) => heartId !== id))
+    }, 1000)
   }
 
   const handleRemove = () => {
@@ -19,7 +28,18 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
   }
 
   return (
-    <div className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 relative">
+    <div className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 relative overflow-hidden">
+      {/* Сердечки */}
+      {hearts.map((heartId) => (
+        <span
+          key={heartId}
+          className="absolute text-pink-400 text-2xl animate-heart z-50 left-1/2 transform -translate-x-1/2"
+          style={{ top: '50%' }}
+        >
+          ❤️
+        </span>
+      ))}
+
       <div className="relative">
         <img src={image} alt={name} className="w-full h-45 object-cover rounded mb-3" />
         {hasPromo && (
