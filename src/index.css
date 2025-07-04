@@ -19,17 +19,3 @@ input[type='number'] {
 .custom-number-input {
   @apply bg-gray-800 border border-gray-600 text-white text-center rounded w-16 px-2 py-1;
 }
-@keyframes floatUp {
-  0% {
-    opacity: 1;
-    transform: translate(-50%, 0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -100px) scale(1.5);
-  }
-}
-
-.animate-heart {
-  animation: floatUp 1s ease-out forwards;
-}
