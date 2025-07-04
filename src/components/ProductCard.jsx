@@ -17,9 +17,8 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
 
     const id = Date.now()
     setHearts((prev) => [...prev, id])
-
     setTimeout(() => {
-      setHearts((prev) => prev.filter((heartId) => heartId !== id))
+      setHearts((prev) => prev.filter((h) => h !== id))
     }, 1000)
   }
 
@@ -28,18 +27,7 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
   }
 
   return (
-    <div className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 relative overflow-hidden">
-      {/* Сердечки */}
-      {hearts.map((heartId) => (
-        <span
-  key={heartId}
-  className="absolute text-pink-400 text-2xl animate-heart z-10 left-1/2 transform -translate-x-1/2 pointer-events-none"
-  style={{ top: '20%' }}
->
-  ❤️
-</span>
-      ))}
-
+    <div className="fancy-block bg-gray-900 text-white p-4 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 relative">
       <div className="relative">
         <img src={image} alt={name} className="w-full h-45 object-cover rounded mb-3" />
         {hasPromo && (
@@ -65,14 +53,36 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
       </div>
 
       {quantity === 0 ? (
-        <button onClick={handleAdd} className="w-full bg-yellow-500 text-black py-2 rounded-xl hover:bg-yellow-600 transition duration-200 font-bold">
+        <button
+          onClick={handleAdd}
+          className="w-full bg-yellow-500 text-black py-2 rounded-xl hover:bg-yellow-600 transition duration-200 font-bold"
+        >
           В корзину
         </button>
       ) : (
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2 relative">
           <button onClick={handleRemove} className="bg-yellow-300 text-black w-8 h-8 rounded-full font-bold text-xl hover:bg-yellow-400">−</button>
           <span className="font-semibold text-lg text-white">{quantity}</span>
-          <button onClick={handleAdd} className="bg-yellow-500 text-black w-8 h-8 rounded-full font-bold text-xl hover:bg-yellow-600">+</button>
+
+          <div className="relative">
+            <button
+              onClick={handleAdd}
+              className="bg-yellow-500 text-black w-8 h-8 rounded-full font-bold text-xl hover:bg-yellow-600"
+            >
+              +
+            </button>
+
+            {/* Анимация сердечек */}
+            {hearts.map((h) => (
+              <span
+                key={h}
+                className="absolute left-1/2 transform -translate-x-1/2 text-pink-500 text-xl animate-heart pointer-events-none"
+                style={{ top: '-20px' }}
+              >
+                ❤️
+              </span>
+            ))}
+          </div>
         </div>
       )}
     </div>
