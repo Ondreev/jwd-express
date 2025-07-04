@@ -34,18 +34,15 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
       <p className="text-sm text-gray-300 mb-2">{description}</p>
 
       <div className="mb-3">
-  {hasDiscount ? (
-    <div className="flex items-baseline gap-2">
-      <span className="text-xl font-bold text-yellow-300">{formatPrice(discountedPrice)}</span>
-      <span className="text-sm line-through text-red-400">{formatPrice(originalPrice)}</span>
-      <div className="overflow-hidden whitespace-nowrap animate-marquee text-xs text-pink-400 font-semibold ml-2 max-w-[180px]">
-        Этот товар сейчас по невероятно низкой цене. Не упусти шанс!
+        {hasDiscount ? (
+          <div className="flex items-baseline gap-2">
+            <span className="text-xl font-bold text-yellow-300">{formatPrice(discountedPrice)}</span>
+            <span className="text-sm line-through text-red-400">{formatPrice(originalPrice)}</span>
+          </div>
+        ) : (
+          <span className="text-lg font-bold text-yellow-300">{formatPrice(originalPrice)}</span>
+        )}
       </div>
-    </div>
-  ) : (
-    <span className="text-lg font-bold text-yellow-300">{formatPrice(originalPrice)}</span>
-  )}
-</div>
 
       {quantity === 0 ? (
         <button onClick={handleAdd} className="w-full bg-yellow-500 text-black py-2 rounded-xl hover:bg-yellow-600 transition duration-200 font-bold">
