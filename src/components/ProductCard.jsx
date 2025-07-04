@@ -32,12 +32,12 @@ export function ProductCard({ product, addToCart, removeFromCart, getQuantity })
       {/* Сердечки */}
       {hearts.map((heartId) => (
         <span
-          key={heartId}
-          className="absolute text-pink-400 text-2xl animate-heart z-50 left-1/2 transform -translate-x-1/2"
-          style={{ top: '50%' }}
-        >
-          ❤️
-        </span>
+  key={heartId}
+  className="absolute text-pink-400 text-2xl animate-heart z-10 left-1/2 transform -translate-x-1/2 pointer-events-none"
+  style={{ top: '20%' }}
+>
+  ❤️
+</span>
       ))}
 
       <div className="relative">
