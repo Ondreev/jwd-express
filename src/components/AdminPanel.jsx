@@ -88,8 +88,8 @@ export function AdminPanel() {
 
     async function loadAdminPass() {
       const res = await fetch(ADMIN_PASS_URL)
-      const json = await res.json()
-      setAdminPass(json.admin_pass?.trim() || '')
+      const text = await res.text()
+      setAdminPass(text.trim())
     }
 
     loadSettings()
