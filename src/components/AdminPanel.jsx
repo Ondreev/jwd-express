@@ -37,17 +37,23 @@ function getBestDiscount(total, rules) {
 }
 
 function parseItems(orderStr, productsList = []) {
-  if (!orderStr) return []
-  return orderStr
-    .split(',')
-    .map(part => part.trim())
-    .map(part => {
-      const [rawName, qtyStr] = part.split(' x')
-      const quantity = Number(qtyStr) || 1
-      const product = productsList.find(p => p.name === rawName) || {}
-      const price = Number(product.price) || 0
-      return { name: rawName, quantity, price }
-    })
+  const items = []
+  const parts = orderStr.split(',').map(p => p.trim()).filter(Boolean)
+
+  for (let part of parts) {
+    const match = part.match(/^(.+?) x\s*(\d+)$/i)
+    if (match) {
+      const name = match[1].trim()
+      const quantity = parseInt(match[2])
+      const found = productsList.find(p => p.name === name)
+      if (!found) continue
+      const discountPercent = parseInt(found.discount || '0')
+      const price = Math.round(found.price * (1 - discountPercent / 100))
+      items.push({ name, price, quantity })
+    }
+  }
+
+  return items
 }
 
 function formatPrice(price) {
@@ -110,30 +116,6 @@ export function AdminPanel() {
     }
   }
 
-  const handlePrint = (index) => {
-    const printContents = document.getElementById(`order-${index}`)
-    if (!printContents) return
-
-    const win = window.open('', '', 'height=800,width=1000')
-    win.document.write('<html><head><title>Печать заказа</title>')
-    win.document.write(`
-      <style>
-        body { font-family: sans-serif; color: black; background: white; padding: 20px; }
-        .text-sm { font-size: 14px; }
-        .font-bold { font-weight: bold; }
-        .text-lg { font-size: 18px; font-weight: bold; }
-        .mt-2, .pt-2, .mb-2, .mb-3, .mb-6 { margin: 6px 0; padding-top: 4px; }
-        .border-t { border-top: 1px solid #999; padding-top: 4px; }
-        .grid { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; }
-        .text-right { text-align: right; }
-      </style></head><body>')
-    win.document.write(printContents.innerHTML)
-    win.document.write('</body></html>')
-    win.document.close()
-    win.focus()
-    setTimeout(() => win.print(), 500)
-  }
-
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen bg-gray-700 text-white p-4 max-w-screen-md mx-auto">
@@ -175,8 +157,7 @@ export function AdminPanel() {
         return (
           <div
             key={i}
-            id={`order-${i}`}
-            className="bg-[#0f172a] text-white p-4 rounded-2xl shadow-lg mb-6 printable"
+            className="bg-[#0f172a] text-white p-4 rounded-2xl shadow-lg mb-6"
           >
             <div className="text-sm mb-3">
               <div><strong>Имя:</strong> {order['Имя']}</div>
@@ -230,13 +211,6 @@ export function AdminPanel() {
               <span>Итого:</span>
               <span>{formatPrice(finalTotal)}</span>
             </div>
-
-            <button
-              onClick={() => handlePrint(i)}
-              className="bg-white text-black px-3 py-1 rounded mt-2 text-sm no-print"
-            >
-              🖨️ Распечатать
-            </button>
           </div>
         )
       })}
