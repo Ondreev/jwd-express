@@ -180,17 +180,15 @@ export function AdminPanel() {
               <div className="mb-2 text-sm text-gray-300 border-t border-gray-700 pt-2">
                 {items.map((item, j) => (
                   <div
-                    key={j}
-                    className="grid grid-cols-[1fr_auto_auto] gap-x-4 items-start mb-1"
-                  >
-                    <span className="break-words whitespace-normal">
-                      {item.name}
-                    </span>
-                    <span className="text-right">x{item.quantity}</span>
-                    <span className="text-right">
-                      {formatPrice(item.price * item.quantity)}
-                    </span>
-                  </div>
+  key={j}
+  className="grid grid-cols-[1fr_40px_80px] gap-x-2 items-start mb-1"
+>
+  <span className="break-words whitespace-normal">{item.name}</span>
+  <span className="text-right tabular-nums w-full">x{item.quantity}</span>
+  <span className="text-right tabular-nums w-full">
+    {formatPrice(item.price * item.quantity)}
+  </span>
+</div>
                 ))}
               </div>
             ) : (
