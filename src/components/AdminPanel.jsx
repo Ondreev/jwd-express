@@ -3,13 +3,13 @@ import { useEffect, useState } from 'react'
 import Papa from 'papaparse'
 
 const CSV_URL =
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vR322Pt499Vfg...9RL09slKkOT0sFrJaOelE/pub?gid=1075610539&single=true&output=csv'
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vR322Pt499Vfg2H8lFKITDC7GIJiZgkq4tubdCKCZR87zeqRVhRBx8NoGk9RL09slKkOT0sFrJaOelE/pub?gid=1075610539&single=true&output=csv'
 const PRODUCTS_URL =
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vR322Pt499Vfg...hRBx8NoGk9RL09slKkOT0sFrJaOelE/pub?gid=0&single=true&output=csv'
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vR322Pt499Vfg2H8lFKITDC7GIJiZgkq4tubdCKCZR87zeqRVhRBx8NoGk9RL09slKkOT0sFrJaOelE/pub?gid=0&single=true&output=csv'
 const SETTINGS_URL =
-  'https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2...x6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getSettings'
+  'https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getSettings'
 const ADMIN_PASS_URL =
-  'https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2...6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getAdminPass'
+  'https://script.google.com/macros/s/AKfycbwuYx0eVaMWIyydg7dIs2wuCzVwr_bx6MGwrIG3Yy-_Xvi8sq6VCVfkxFCp6svMQI7lCQ/exec?action=getAdminPass'
 
 function parseCSV(text) {
   const { data } = Papa.parse(text.trim(), { header: true, skipEmptyLines: true })
@@ -63,55 +63,57 @@ export function AdminPanel() {
   const [orders, setOrders] = useState(null)
   const [productsList, setProductsList] = useState([])
   const [discountRules, setDiscountRules] = useState([])
-  const [adminPass, setAdminPass] = useState('')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [password, setPassword] = useState('')
 
   useEffect(() => {
-    async function loadSettings() {
-      const res = await fetch(SETTINGS_URL)
-      const json = await res.json()
-      setDiscountRules(getDiscountRules(json))
+    if (!isLoggedIn) return
+
+    async function loadData() {
+      try {
+        const [csvText, settingsRes, productsText] = await Promise.all([
+          fetch(CSV_URL).then(res => res.text()),
+          fetch(SETTINGS_URL).then(res => res.json()),
+          fetch(PRODUCTS_URL).then(res => res.text())
+        ])
+
+        const parsedOrders = parseCSV(csvText)
+        const parsedProducts = Papa.parse(productsText.trim(), { header: true }).data
+          .map(row => ({
+            name: row['name']?.trim(),
+            price: Math.round(parseFloat((row['price'] || '0').replace(/\s/g, '').replace(',', '.'))),
+            discount: parseInt((row['discoun'] || '').replace(/\D/g, '')),
+          }))
+          .filter(p => p.name && !isNaN(p.price))
+
+        setOrders(parsedOrders)
+        setProductsList(parsedProducts)
+        setDiscountRules(getDiscountRules(settingsRes))
+      } catch (error) {
+        console.error('Ошибка при загрузке данных:', error)
+      }
     }
+    loadData()
+  }, [isLoggedIn])
 
-    async function loadProducts() {
-      const text = await fetch(PRODUCTS_URL).then(r => r.text())
-      const data = Papa.parse(text.trim(), { header: true }).data
-      setProductsList(data)
+  const handleLogin = async () => {
+    try {
+      const res = await fetch(ADMIN_PASS_URL)
+      const realPass = await res.text()
+      if (password === realPass.trim()) {
+        setIsLoggedIn(true)
+      } else {
+        alert('Неверный пароль')
+      }
+    } catch (err) {
+      console.error('Ошибка авторизации:', err)
     }
-
-    async function loadOrders() {
-      const text = await fetch(CSV_URL).then(res => res.text())
-      const data = parseCSV(text)
-      setOrders(data)
-    }
-
-    async function loadAdminPass() {
-  const res = await fetch(ADMIN_PASS_URL)
-  const text = await res.text()
-  const lines = text.trim().split(/
-?
-/)
-  const filtered = lines.filter(line => line.trim()).map(line => line.split(',')).filter(row => row[0] && row[1])
-  const obj = Object.fromEntries(filtered)
-  const pass = obj["admin_pass"] || ""
-  setAdminPass(pass.trim())
-}
-
-    loadSettings()
-    loadProducts()
-    loadOrders()
-    loadAdminPass()
-  }, [])
-
-  function handleLogin() {
-    if (password === adminPass) setIsLoggedIn(true)
-    else alert('Неверный пароль')
   }
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gray-700 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-gray-700 text-white p-4 max-w-screen-md mx-auto">
+        <h2 className="text-2xl font-bold mb-4">Вход в админ-панель</h2>
         <input
           type="password"
           value={password}
@@ -128,7 +130,10 @@ export function AdminPanel() {
 
   if (!orders) {
     return (
-      <div>Загрузка...</div>
+      <div className="min-h-screen bg-gray-700 text-white p-4 max-w-screen-md mx-auto">
+        <h2 className="text-2xl font-bold mb-6">Заказы</h2>
+        <div>Загрузка заказов и настроек скидок...</div>
+      </div>
     )
   }
 
@@ -137,15 +142,18 @@ export function AdminPanel() {
       <h2 className="text-2xl font-bold mb-6">Заказы</h2>
 
       {orders.map((order, i) => {
-        const items = parseItems(order['Заказ'], productsList)
+        const items = parseItems(order['Заказ'] || '', productsList)
         const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-        const best = getBestDiscount(total, discountRules)
-        const discountAmount = (total * best.percent) / 100
+        const matchedRule = getBestDiscount(total, discountRules)
+        const discountAmount = Math.round(total * matchedRule.percent / 100)
         const finalTotal = total - discountAmount
 
         return (
-          <div key={i} className="bg-[#0f172a] p-4 rounded-2xl shadow-lg mb-6">
-            <div className="text-sm mb-3 text-white">
+          <div
+            key={i}
+            className="bg-[#0f172a] text-white p-4 rounded-2xl shadow-lg mb-6"
+          >
+            <div className="text-sm mb-3">
               <div><strong>Имя:</strong> {order['Имя']}</div>
               <div>
                 <strong>WhatsApp:</strong>{' '}
@@ -183,9 +191,9 @@ export function AdminPanel() {
               <div className="text-gray-500 text-sm italic">Нет товаров</div>
             )}
 
-            {best.percent > 0 ? (
+            {matchedRule.percent > 0 ? (
               <div className="text-yellow-400 font-semibold text-sm mt-2">
-                Применена скидка {best.percent}%: {formatPrice(discountAmount)}
+                Применена скидка {matchedRule.percent}%: {formatPrice(discountAmount)}
               </div>
             ) : (
               <div className="text-yellow-400 font-semibold text-sm mt-2">
