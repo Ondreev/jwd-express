@@ -35,33 +35,3 @@ input[type='number'] {
   border-radius: 0.75rem; /* = rounded-xl */
 }
 
-@media print {
-  body {
-    background: white !important;
-    color: black !important;
-  }
-
-  .print\:text-black {
-    color: black !important;
-  }
-
-  .print\:bg-white {
-    background-color: white !important;
-  }
-
-  .no-print, button, .shadow-lg, .bg-[#0f172a] {
-    display: none !important;
-  }
-
-  .rounded-2xl, .p-4, .mb-6 {
-    all: unset !important;
-  }
-
-  .printable {
-    color: black !important;
-    background: white !important;
-    font-size: 14px;
-  }
-}
-
-
