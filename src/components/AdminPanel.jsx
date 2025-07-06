@@ -116,6 +116,23 @@ export function AdminPanel() {
     }
   }
 
+  const handleQuantityChange = (orderIndex, itemIndex, newQty) => {
+    if (isNaN(newQty) || newQty < 1) return
+
+    const updatedOrders = [...orders]
+    const currentOrder = updatedOrders[orderIndex]
+    const items = parseItems(currentOrder['Заказ'], productsList)
+
+    items[itemIndex].quantity = newQty
+
+    const newOrderString = items
+      .map(item => `${item.name} x${item.quantity}`)
+      .join(', ')
+
+    updatedOrders[orderIndex]['Заказ'] = newOrderString
+    setOrders(updatedOrders)
+  }
+
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen bg-gray-700 text-white p-4 max-w-screen-md mx-auto">
@@ -180,15 +197,25 @@ export function AdminPanel() {
               <div className="mb-2 text-sm text-gray-300 border-t border-gray-700 pt-2">
                 {items.map((item, j) => (
                   <div
-  key={j}
-  className="grid grid-cols-[1fr_40px_80px] gap-x-2 items-start mb-1"
->
-  <span className="break-words whitespace-normal">{item.name}</span>
-  <span className="text-right tabular-nums w-full">x{item.quantity}</span>
-  <span className="text-right tabular-nums w-full">
-    {formatPrice(item.price * item.quantity)}
-  </span>
-</div>
+                    key={j}
+                    className="grid grid-cols-[1fr_40px_80px] gap-x-2 items-start mb-1"
+                  >
+                    <span className="break-words whitespace-normal">
+                      {item.name}
+                    </span>
+                    <input
+                      type="number"
+                      min="1"
+                      value={item.quantity}
+                      onChange={(e) =>
+                        handleQuantityChange(i, j, parseInt(e.target.value) || 1)
+                      }
+                      className="bg-gray-800 text-white text-right px-1 rounded w-full"
+                    />
+                    <span className="text-right tabular-nums w-full">
+                      {formatPrice(item.price * item.quantity)}
+                    </span>
+                  </div>
                 ))}
               </div>
             ) : (
