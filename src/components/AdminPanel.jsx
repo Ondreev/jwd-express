@@ -87,10 +87,16 @@ export function AdminPanel() {
     }
 
     async function loadAdminPass() {
-      const res = await fetch(ADMIN_PASS_URL)
-      const text = await res.text()
-      setAdminPass(text.trim())
-    }
+  const res = await fetch(ADMIN_PASS_URL)
+  const text = await res.text()
+  const lines = text.trim().split(/
+?
+/)
+  const filtered = lines.filter(line => line.trim()).map(line => line.split(',')).filter(row => row[0] && row[1])
+  const obj = Object.fromEntries(filtered)
+  const pass = obj["admin_pass"] || ""
+  setAdminPass(pass.trim())
+}
 
     loadSettings()
     loadProducts()
