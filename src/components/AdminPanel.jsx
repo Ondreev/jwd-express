@@ -63,6 +63,7 @@ export function AdminPanel() {
   const [orders, setOrders] = useState(null)
   const [productsList, setProductsList] = useState([])
   const [discountRules, setDiscountRules] = useState([])
+  const [adminPass, setAdminPass] = useState('')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [password, setPassword] = useState('')
 
@@ -85,13 +86,20 @@ export function AdminPanel() {
       setOrders(data)
     }
 
+    async function loadAdminPass() {
+      const res = await fetch(ADMIN_PASS_URL)
+      const text = await res.text()
+      setAdminPass(text.trim())
+    }
+
     loadSettings()
     loadProducts()
     loadOrders()
-  }, [isLoggedIn])
+    loadAdminPass()
+  }, [])
 
   function handleLogin() {
-    if (password === 'admin123') setIsLoggedIn(true)
+    if (password === adminPass) setIsLoggedIn(true)
     else alert('Неверный пароль')
   }
 
