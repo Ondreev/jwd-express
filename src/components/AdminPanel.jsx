@@ -37,17 +37,23 @@ function getBestDiscount(total, rules) {
 }
 
 function parseItems(orderStr, productsList = []) {
-  if (!orderStr) return []
-  return orderStr
-    .split(',')
-    .map(part => part.trim())
-    .map(part => {
-      const [rawName, qtyStr] = part.split(' x')
-      const quantity = Number(qtyStr) || 1
-      const product = productsList.find(p => p.name === rawName) || {}
-      const price = Number(product.price) || 0
-      return { name: rawName, quantity, price }
-    })
+  const items = []
+  const parts = orderStr.split(',').map(p => p.trim()).filter(Boolean)
+
+  for (let part of parts) {
+    const match = part.match(/^(.+?) x\s*(\d+)$/i)
+    if (match) {
+      const name = match[1].trim()
+      const quantity = parseInt(match[2])
+      const found = productsList.find(p => p.name === name)
+      if (!found) continue
+      const discountPercent = parseInt(found.discount || '0')
+      const price = Math.round(found.price * (1 - discountPercent / 100))
+      items.push({ name, price, quantity })
+    }
+  }
+
+  return items
 }
 
 function formatPrice(price) {
